@@ -1,0 +1,574 @@
+{
+  "id": "weather_root",
+  "type": "module",
+  "context": {
+    "_title": "Weather",
+    "_icon": "cloud.sun.fill",
+    "accentStart": "#4facfe",
+    "accentEnd": "#00f2fe",
+    "bgTop": "#1B7CF2",
+    "bgBottom": "#62B8F7"
+  },
+  "state": {
+    "query": "",
+    "focused": "",
+    "cities": [],
+    "weather": {},
+    "error": "",
+    "iconScale": 1.0,
+    "onClose": false
+  },
+  "dependencies": [
+    { "repository": { "remote": { "id": "repo_geo", "config": { "endPoint": "https://geocoding-api.open-meteo.com/v1/search" } } } },
+    { "repository": { "remote": { "id": "repo_weather", "config": { "endPoint": "https://api.open-meteo.com/v1/forecast" } } } },
+    {
+      "component": {
+        "id": "weather_detail_scroll",
+        "type": "scroll",
+        "children": [
+          {
+            "id": "weather_detail_vstack",
+            "type": "vstack",
+            "context": { "_spacing": 16, "_alignment": "center" },
+            "style": {
+              "layout": { "padding": { "top": 24, "bottom": 32, "leading": 20, "trailing": 20 }, "maxWidth": "infinity" }
+            },
+            "children": [
+              {
+                "id": "detail_cond_icon",
+                "type": "image",
+                "context": { "_source": "sf://cloud.sun.fill" },
+                "style": {
+                  "common": { "foreground": { "color": "white" }, "scale": "${iconScale}" },
+                  "layout": { "width": 56, "height": 56 },
+                  "animation": { "kind": "spring", "value": "${iconScale}", "duration": 1, "blendDuration": 0.7, "bounce": 0.7 }
+                }
+              },
+              {
+                "id": "detail_place_name",
+                "type": "text",
+                "context": { "_text": "{{ @{item.name} + ', ' + @{item.country} }}" },
+                "style": {
+                  "common": { "font": "title2", "foreground": { "color": "white" } },
+                  "text": { "multilineTextAlignment": "center" }
+                }
+              },
+              {
+                "id": "detail_temp_now",
+                "type": "text",
+                "context": { "_text": "{{ ${weather.current.temperature_2m} + '°' }}" },
+                "style": {
+                  "common": { "font": { "kind": "system", "size": 72, "weight": "ultraLight" }, "foreground": { "color": "white" } }
+                }
+              },
+              {
+                "id": "detail_minmax_row",
+                "type": "hstack",
+                "context": { "_spacing": 16, "_alignment": "center" },
+                "children": [
+                  {
+                    "id": "detail_high",
+                    "type": "text",
+                    "context": { "_text": "{{ 'H: ' + ${weather.daily.temperature_2m_max[0]} + '°' }}" },
+                    "style": { "common": { "font": { "kind": "body", "weight": "semibold" }, "foreground": { "color": "white" } } }
+                  },
+                  {
+                    "id": "detail_low",
+                    "type": "text",
+                    "context": { "_text": "{{ 'L: ' + ${weather.daily.temperature_2m_min[0]} + '°' }}" },
+                    "style": { "common": { "font": { "kind": "body", "weight": "semibold" }, "foreground": { "color": { "color": "white", "opacity": 0.7 } } } }
+                  }
+                ]
+              },
+
+              {
+                "id": "detail_daily_card",
+                "type": "vstack",
+                "context": { "_spacing": 0, "_alignment": "leading" },
+                "style": {
+                  "common": { "background": { "color": { "color": "white", "opacity": 0.2 } }, "cornerRadius": 16 },
+                  "layout": { "padding": { "top": 14, "bottom": 8, "leading": 16, "trailing": 16 }, "maxWidth": "infinity" }
+                },
+                "children": [
+                  {
+                    "id": "detail_daily_header",
+                    "type": "text",
+                    "context": { "_text": "7-DAY FORECAST" },
+                    "style": {
+                      "common": { "font": { "kind": "caption", "weight": "semibold" }, "foreground": { "color": "white" } },
+                      "layout": { "padding": { "bottom": 8 } }
+                    }
+                  },
+                  { "id": "detail_daily_div", "type": "divider" },
+                  {
+                    "id": "detail_daily_dynamic",
+                    "type": "dynamic",
+                    "context": { "_data": "${weather.daily.temperature_2m_max}"},
+                    "prototype": {
+                      "id": "detail_day_row",
+                      "type": "hstack",
+                      "context": { "_spacing": 8, "_alignment": "center" },
+                      "style": { "layout": { "padding": { "top": 8, "bottom": 8 }, "maxWidth": "infinity" } },
+                      "children": [
+                        {
+                          "id": "detail_day_name",
+                          "type": "text",
+                          "context": {
+                            "_text": "{{ cast(${weather.daily.time[@{index}]}, 'date') }}",
+                            "_format": { "date": { "style": "custom", "pattern": "EEE" } }
+                          },
+                          "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" }, "foreground": { "color": "white" } }, "layout": { "width": 36 } }
+                        },
+                        {
+                          "id": "detail_day_icon",
+                          "type": "image",
+                          "context": {
+                            "_source": "{{ ${weather.daily.weather_code[@{index}]} < 2 ? 'sf://sun.max.fill' : (${weather.daily.weather_code[@{index}]} < 4 ? 'sf://cloud.sun.fill' : (${weather.daily.weather_code[@{index}]} < 50 ? 'sf://cloud.fog.fill' : (${weather.daily.weather_code[@{index}]} < 70 ? 'sf://cloud.rain.fill' : (${weather.daily.weather_code[@{index}]} < 80 ? 'sf://cloud.snow.fill' : 'sf://cloud.heavyrain.fill')))) }}"
+                          },
+                          "style": { "common": { "foreground": { "color": "white" } }, "layout": { "width": 20, "height": 20 } }
+                        },
+                        {
+                          "id": "detail_day_low",
+                          "type": "text",
+                          "context": {
+                            "_text": "{{ cast(${weather.daily.temperature_2m_min[@{index}]}, 'int') + '°' }}"
+                          },
+                          "style": { "common": { "font": "subheadline", "foreground": { "color": { "color": "white", "opacity": 0.7 } } }, "layout": { "width": 30 }, "text": { "multilineTextAlignment": "trailing" } }
+                        },
+                        {
+                          "id": "detail_day_bar",
+                          "type": "capsule",
+                          "style": {
+                            "layout": { "height": 5, "maxWidth": "infinity" },
+                            "shape": {
+                              "fill": { "gradient": { "linear": { "colors": ["#4facfe", "#FFD700", "#FF6B35"], "startPoint": "leading", "endPoint": "trailing" } } }
+                            }
+                          }
+                        },
+                        {
+                          "id": "detail_day_high",
+                          "type": "text",
+                          "context": {
+                            "_text": "{{ cast(@{item}, 'int') + '°' }}"
+                          },
+                          "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" }, "foreground": { "color": "white" } }, "layout": { "width": 30 } }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+
+              {
+                "id": "detail_info_card",
+                "type": "vstack",
+                "context": { "_spacing": 12, "_alignment": "leading" },
+                "style": {
+                  "common": { "background": { "color": { "color": "white", "opacity": 0.2 } }, "cornerRadius": 16 },
+                  "layout": { "padding": { "top": 14, "bottom": 16, "leading": 16, "trailing": 16 }, "maxWidth": "infinity" }
+                },
+                "children": [
+                  {
+                    "id": "detail_info_header",
+                    "type": "text",
+                    "context": { "_text": "WEATHER DETAILS" },
+                    "style": { "common": { "font": { "kind": "caption", "weight": "semibold" }, "foreground": { "color": "white" } } }
+                  },
+                  { "id": "detail_info_div", "type": "divider" },
+                  {
+                    "id": "detail_row_1",
+                    "type": "hstack",
+                    "context": { "_spacing": 0 },
+                    "children": [
+                      {
+                        "id": "detail_tile_feels",
+                        "type": "hstack",
+                        "context": { "_spacing": 10, "_alignment": "center" },
+                        "style": { "layout": { "maxWidth": "infinity" } },
+                        "children": [
+                          { "id": "detail_feels_icon", "type": "image", "context": { "_source": "sf://thermometer.medium" }, "style": { "common": { "foreground": { "color": { "color": "white", "opacity": 0.7 } } }, "layout": { "width": 22, "height": 22 } } },
+                          {
+                            "id": "detail_feels_text", "type": "vstack", "context": { "_spacing": 2, "_alignment": "leading" },
+                            "children": [
+                              { "id": "detail_feels_label", "type": "text", "context": { "_text": "FEELS LIKE" }, "style": { "common": { "font": { "kind": "system", "size": 10 }, "foreground": { "color": { "color": "white", "opacity": 0.7 } } } } },
+                              { "id": "detail_feels_value", "type": "text", "context": { "_text": "{{ ${weather.current.apparent_temperature} + '°' }}" }, "style": { "common": { "font": { "kind": "title3", "weight": "semibold" }, "foreground": { "color": "white" } } } }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "detail_tile_humidity",
+                        "type": "hstack",
+                        "context": { "_spacing": 10, "_alignment": "center" },
+                        "style": { "layout": { "maxWidth": "infinity" } },
+                        "children": [
+                          { "id": "detail_humid_icon", "type": "image", "context": { "_source": "sf://humidity" }, "style": { "common": { "foreground": { "color": { "color": "white", "opacity": 0.7 } } }, "layout": { "width": 22, "height": 22 } } },
+                          {
+                            "id": "detail_humid_text", "type": "vstack", "context": { "_spacing": 2, "_alignment": "leading" },
+                            "children": [
+                              { "id": "detail_humid_label", "type": "text", "context": { "_text": "HUMIDITY" }, "style": { "common": { "font": { "kind": "system", "size": 10 }, "foreground": { "color": { "color": "white", "opacity": 0.7 } } } } },
+                              { "id": "detail_humid_value", "type": "text", "context": { "_text": "{{ ${weather.current.relative_humidity_2m} + '%' }}" }, "style": { "common": { "font": { "kind": "title3", "weight": "semibold" }, "foreground": { "color": "white" } } } }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  { "id": "detail_info_div2", "type": "divider" },
+                  {
+                    "id": "detail_row_2",
+                    "type": "hstack",
+                    "context": { "_spacing": 0 },
+                    "children": [
+                      {
+                        "id": "detail_tile_wind",
+                        "type": "hstack",
+                        "context": { "_spacing": 10, "_alignment": "center" },
+                        "style": { "layout": { "maxWidth": "infinity" } },
+                        "children": [
+                          { "id": "detail_wind_icon", "type": "image", "context": { "_source": "sf://wind" }, "style": { "common": { "foreground": { "color": { "color": "white", "opacity": 0.7 } } }, "layout": { "width": 22, "height": 22 } } },
+                          {
+                            "id": "detail_wind_text", "type": "vstack", "context": { "_spacing": 2, "_alignment": "leading" },
+                            "children": [
+                              { "id": "detail_wind_label", "type": "text", "context": { "_text": "WIND" }, "style": { "common": { "font": { "kind": "system", "size": 10 }, "foreground": { "color": { "color": "white", "opacity": 0.7 } } } } },
+                              { "id": "detail_wind_value", "type": "text", "context": { "_text": "{{ ${weather.current.wind_speed_10m} + ' km/h' }}" }, "style": { "common": { "font": { "kind": "title3", "weight": "semibold" }, "foreground": { "color": "white" } } } }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "detail_tile_uv",
+                        "type": "hstack",
+                        "context": { "_spacing": 10, "_alignment": "center" },
+                        "style": { "layout": { "maxWidth": "infinity" } },
+                        "children": [
+                          { "id": "detail_uv_icon", "type": "image", "context": { "_source": "sf://sun.max.fill" }, "style": { "common": { "foreground": { "color": { "color": "white", "opacity": 0.7 } } }, "layout": { "width": 22, "height": 22 } } },
+                          {
+                            "id": "detail_uv_text", "type": "vstack", "context": { "_spacing": 2, "_alignment": "leading" },
+                            "children": [
+                              { "id": "detail_uv_label", "type": "text", "context": { "_text": "UV INDEX" }, "style": { "common": { "font": { "kind": "system", "size": 10 }, "foreground": { "color": { "color": "white", "opacity": 0.7 } } } } },
+                              { "id": "detail_uv_value", "type": "text", "context": { "_text": "${weather.daily.uv_index_max[0]}" }, "style": { "common": { "font": { "kind": "title3", "weight": "semibold" }, "foreground": { "color": "white" } } } }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  { "id": "detail_info_div3", "type": "divider" },
+                  {
+                    "id": "detail_row_3",
+                    "type": "hstack",
+                    "context": { "_spacing": 0 },
+                    "children": [
+                      {
+                        "id": "detail_tile_sunrise",
+                        "type": "hstack",
+                        "context": { "_spacing": 10, "_alignment": "center" },
+                        "style": { "layout": { "maxWidth": "infinity" } },
+                        "children": [
+                          { "id": "detail_sunrise_icon", "type": "image", "context": { "_source": "sf://sunrise.fill" }, "style": { "common": { "foreground": { "color": "#FFD700" } }, "layout": { "width": 22, "height": 22 } } },
+                          {
+                            "id": "detail_sunrise_text", "type": "vstack", "context": { "_spacing": 2, "_alignment": "leading" },
+                            "children": [
+                              { "id": "detail_sunrise_label", "type": "text", "context": { "_text": "SUNRISE" }, "style": { "common": { "font": { "kind": "system", "size": 10 }, "foreground": { "color": { "color": "white", "opacity": 0.7 } } } } },
+                              { "id": "detail_sunrise_value", "type": "text", "context": { "_text": "{{ cast(${weather.daily.sunrise[0]}, 'date') }}", "_format": { "date": { "style": "custom", "pattern": "HH:mm" } } }, "style": { "common": { "font": { "kind": "title3", "weight": "semibold" }, "foreground": { "color": "white" } } } }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "detail_tile_sunset",
+                        "type": "hstack",
+                        "context": { "_spacing": 10, "_alignment": "center" },
+                        "style": { "layout": { "maxWidth": "infinity" } },
+                        "children": [
+                          { "id": "detail_sunset_icon", "type": "image", "context": { "_source": "sf://sunset.fill" }, "style": { "common": { "foreground": { "color": "#FF6B35" } }, "layout": { "width": 22, "height": 22 } } },
+                          {
+                            "id": "detail_sunset_text", "type": "vstack", "context": { "_spacing": 2, "_alignment": "leading" },
+                            "children": [
+                              { "id": "detail_sunset_label", "type": "text", "context": { "_text": "SUNSET" }, "style": { "common": { "font": { "kind": "system", "size": 10 }, "foreground": { "color": { "color": "white", "opacity": 0.7 } } } } },
+                              { "id": "detail_sunset_value", "type": "text", "context": { "_text": "{{ cast(${weather.daily.sunset[0]}, 'date') }}", "_format": { "date": { "style": "custom", "pattern": "HH:mm" } } }, "style": { "common": { "font": { "kind": "title3", "weight": "semibold" }, "foreground": { "color": "white" } } } }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "children": [
+    {
+      "id": "weather_nav",
+      "type": "navigation",
+      "children": [
+        {
+          "id": "weather_search_bar",
+          "type": "hstack",
+          "context": { "_spacing": 8 },
+          "style": {
+            "common": {
+              "background": { "gradient": { "linear": { "colors": ["@{accentStart}", "@{accentEnd}"], "startPoint": "leading", "endPoint": "trailing" } } },
+              "cornerRadius": 12,
+              "shadow": { "color": { "color": "black", "opacity": 0.1 }, "radius": 8, "y": 4 }
+            },
+            "layout": { "padding": { "top": 8, "bottom": 8, "leading": 12, "trailing": 12 } }
+          },
+          "children": [
+            {
+              "id": "weather_mag_icon",
+              "type": "image",
+              "context": { "_source": "sf://magnifyingglass" },
+              "style": { "common": { "foreground": { "color": "white" } }, "layout": { "width": 18 } }
+            },
+            {
+              "id": "weather_search_field",
+              "type": "textfield",
+              "context": {
+                "_label": "Search city",
+                "_text": "${query}",
+                "_focused": "{{ ${focused} == 'weather_search_field' }}",
+                "_debounce": 0.3
+              },
+              "style": { "common": { "foreground": { "color": "white" } } },
+              "events": {
+                "onChange": {
+                  "observed": "query",
+                  "actions": [
+                    {
+                      "repo": {
+                        "id": "weather_geo_action",
+                        "input": {
+                          "repositoryId": "repo_geo",
+                          "operation": "read",
+                          "params": { "body": { "name": "${query}", "count": 10, "language": "en" } }
+                        },
+                        "output": {
+                          "success": [{ "state": { "id": "weather_cities_update", "input": { "cities": "@{weather_geo_action.results}" } } }],
+                          "failure": [{ "state": { "id": "weather_geo_error", "input": { "error": "@{weather_geo_action.message}" } } }]
+                        },
+                        "debounce": 0.3
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "id": "weather_clear_cond",
+              "type": "conditional",
+              "context": {
+                "_condition": "{{ notEmpty(${query}) }}",
+                "_trueComponent": {
+                  "id": "weather_clear_btn",
+                  "type": "button",
+                  "children": [
+                    {
+                      "id": "weather_clear_icon",
+                      "type": "image",
+                      "context": { "_source": "sf://xmark.circle.fill" },
+                      "style": { "layout": { "width": 16, "height": 16 }, "common": { "foreground": { "color": { "color": "white", "opacity": 0.7 } } } }
+                    }
+                  ],
+                  "events": { "onTap": [{ "state": { "id": "weather_clear_query", "input": { "query": "", "cities": [] } } }] }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "weather_error_cond",
+          "type": "conditional",
+          "context": {
+            "_condition": "{{ notEmpty(${error}) }}",
+            "_trueComponent": {
+              "id": "weather_error_banner",
+              "type": "label",
+              "context": { "_title": "${error}", "_image": "sf://exclamationmark.triangle" },
+              "style": {
+                "common": { "foreground": { "color": "red" } },
+                "layout": { "padding": { "top": 8, "bottom": 8 } }
+              }
+            }
+          }
+        },
+        {
+          "id": "weather_results_list",
+          "type": "list",
+          "style": {
+            "navigation": {
+              "navigationTitle": "Weather",
+              "navigationBarTitleDisplayMode": "large",
+              "toolbarTrailing": {
+                "id": "weather_close_btn",
+                "type": "button",
+                "style": { "button": { "custom": {
+                  "layout": { "width": 36, "height": 36 },
+                  "common": { "cornerRadius": 18, "background": { "light": "#EFEFEF", "dark": "#2C2C2E" } }
+                } } },
+                "children": [
+                  { "id": "weather_close_icon", "type": "image", "context": { "_source": "sf://xmark" },
+                    "style": { "layout": { "width": 12, "height": 12 },
+                               "common": { "foreground": { "light": "#262626", "dark": "#FFFFFF" },
+                                           "font": { "kind": "caption", "weight": "bold" } } } }
+                ],
+                "events": { "onTap": [{ "state": { "id": "weather_close_action", "input": { "onClose": true } } }] }
+              }
+            }
+          },
+          "children": [
+            {
+              "id": "weather_city_dynamic",
+              "type": "dynamic",
+              "context": { "_data": "${cities}" },
+              "prototype": {
+                "id": "weather_city_link",
+                "type": "link",
+                "destination": {
+                  "id": "weather_city_detail",
+                  "type": "module",
+                  "state": { "weather": {}, "error": "", "iconScale": 1.0, "unitsCelsius": true },
+                  "style": {
+                    "common": {
+                      "background": { "gradient": { "linear": {
+                        "colors": ["@{bgTop}", "@{bgBottom}"],
+                        "startPoint": "top", "endPoint": "bottom"
+                      }}},
+                      "tint": "white"
+                    },
+                    "navigation": {
+                      "navigationBarTitleDisplayMode": "inline",
+                      "toolbarTrailing": {
+                        "id": "weather_unit_btn",
+                        "type": "button",
+                        "context": { "_label": "{{ ${unitsCelsius} ? '°C' : '°F' }}" },
+                        "style": { "common": { "font": { "kind": "body", "weight": "semibold" }, "foreground": { "color": "white" } } },
+                        "events": { "onTap": [{ "state": { "id": "weather_toggle_unit", "input": { "unitsCelsius": "{{ !${unitsCelsius} }}" } } }] }
+                      }
+                    }
+                  },
+                  "children": [
+                    { "id": "weather_detail_use", "type": "template", "context": { "_source": "dp://weather_detail_scroll" } }
+                  ],
+                  "events": {
+                    "onAppear": [
+                      {
+                        "repo": {
+                          "id": "weather_fetch_action",
+                          "input": {
+                            "repositoryId": "repo_weather",
+                            "operation": "read",
+                            "params": {
+                              "body": {
+                                "latitude": "@{item.latitude}",
+                                "longitude": "@{item.longitude}",
+                                "current": "temperature_2m,weather_code,apparent_temperature,relative_humidity_2m,wind_speed_10m",
+                                "daily": "temperature_2m_max,temperature_2m_min,weather_code,uv_index_max,sunrise,sunset",
+                                "timezone": "auto",
+                                "temperature_unit": "{{ ${unitsCelsius} ? 'celsius' : 'fahrenheit' }}"
+                              }
+                            }
+                          },
+                          "output": {
+                            "success": [
+                              {
+                                "state": {
+                                  "id": "weather_data_update",
+                                  "input": { "weather": "@{weather_fetch_action}" },
+                                  "output": {
+                                    "success": [
+                                      { "state": { "id": "weather_icon_bounce", "input": { "iconScale": 1.25 } } }
+                                    ]
+                                  }
+                                }
+                              }
+                            ],
+                            "failure": [{ "state": { "id": "weather_fetch_error", "input": { "error": "@{weather_fetch_action.message}" } } }]
+                          }
+                        }
+                      }
+                    ],
+                    "onChange": {
+                      "observed": "unitsCelsius",
+                      "actions": [
+                        {
+                          "repo": {
+                            "id": "weather_refetch_action",
+                            "input": {
+                              "repositoryId": "repo_weather",
+                              "operation": "read",
+                              "params": {
+                                "body": {
+                                  "latitude": "@{item.latitude}",
+                                  "longitude": "@{item.longitude}",
+                                  "current": "temperature_2m,weather_code,apparent_temperature,relative_humidity_2m,wind_speed_10m",
+                                  "daily": "temperature_2m_max,temperature_2m_min,weather_code,uv_index_max,sunrise,sunset",
+                                  "timezone": "auto",
+                                  "temperature_unit": "{{ ${unitsCelsius} ? 'celsius' : 'fahrenheit' }}"
+                                }
+                              }
+                            },
+                            "output": {
+                              "success": [{ "state": { "id": "weather_refetch_update", "input": { "weather": "@{weather_refetch_action}" } } }],
+                              "failure": [{ "state": { "id": "weather_refetch_error", "input": { "error": "@{weather_refetch_action.message}" } } }]
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "onDisappear": [
+                      { "state": { "id": "weather_icon_reset", "input": { "iconScale": 1 } } }
+                    ]
+                  }
+                },
+                "children": [
+                  {
+                    "id": "weather_city_row",
+                    "type": "hstack",
+                    "context": { "_spacing": 12, "_alignment": "center" },
+                    "style": {
+                      "layout": { "padding": { "top": 4, "bottom": 4 } }
+                    },
+                    "children": [
+                      {
+                        "id": "weather_pin_icon",
+                        "type": "image",
+                        "context": { "_source": "sf://location.fill" },
+                        "style": { "common": { "foreground": { "color": "@{accentStart}" } }, "layout": { "width": 20 } }
+                      },
+                      {
+                        "id": "weather_city_info",
+                        "type": "vstack",
+                        "context": { "_spacing": 2, "_alignment": "leading" },
+                        "children": [
+                          {
+                            "id": "weather_city_name",
+                            "type": "text",
+                            "context": { "_text": "@{item.name}" },
+                            "style": { "common": { "font": { "kind": "body", "weight": "semibold" } } }
+                          },
+                          {
+                            "id": "weather_city_sub",
+                            "type": "text",
+                            "context": { "_text": "{{ @{item.admin1} + ', ' + @{item.country} }}" },
+                            "style": { "common": { "foreground": { "color": "secondary" }, "font": "subheadline" } }
+                          }
+                        ]
+                      },
+                      { "id": "weather_city_spacer", "type": "spacer" }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

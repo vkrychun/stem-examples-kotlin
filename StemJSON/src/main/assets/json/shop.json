@@ -1,0 +1,561 @@
+{
+  "id": "data_store_root",
+  "type": "module",
+  "context": {
+    "_title": "Shop",
+    "_icon": "bag.fill"
+  },
+  "state": {
+    "search": "",
+    "focused": "",
+    "web": [],
+    "isLoading": true,
+    "statusMessage": "",
+    "statusIcon": "",
+    "showStatus": false,
+    "isError": false,
+    "deletedId": 0,
+    "onClose": false
+  },
+  "dependencies": [
+    {
+      "repository": { "remote": { "id": "ds_remote", "config": { "endPoint": "https://dummyjson.com/products" } } }
+    },
+    {
+      "repository": { "local": { "id": "ds_local", "config": {} } }
+    },
+    {
+      "component": {
+        "id": "ds_detail_screen",
+        "type": "module",
+        "children": [
+          {
+            "id": "ds_detail_scroll",
+            "type": "scroll",
+            "children": [
+              {
+                "id": "ds_detail_vstack",
+                "type": "vstack",
+                "context": { "_spacing": 0, "_alignment": "leading" },
+                "children": [
+                  {
+                    "id": "ds_detail_image",
+                    "type": "image",
+                    "context": { "_source": "@{item.thumbnail}", "_placeholder": "sf://photo", "_contentMode": "fit" },
+                    "style": {
+                      "layout": { "height": 280, "maxWidth": 9999 },
+                      "common": { "background": { "color": "#F2F2F7" } }
+                    }
+                  },
+                  {
+                    "id": "ds_detail_body",
+                    "type": "vstack",
+                    "context": { "_spacing": 14, "_alignment": "leading" },
+                    "style": { "layout": { "padding": { "top": 20, "bottom": 32, "leading": 20, "trailing": 20 } } },
+                    "children": [
+                      {
+                        "id": "ds_detail_title",
+                        "type": "text",
+                        "context": { "_text": "@{item.title}" },
+                        "style": { "common": { "font": "title2", "foreground": { "color": "primary" } } }
+                      },
+                      {
+                        "id": "ds_detail_brand",
+                        "type": "text",
+                        "context": { "_text": "@{item.brand}" },
+                        "style": { "common": { "font": "subheadline", "foreground": { "color": "secondary" } } }
+                      },
+                      {
+                        "id": "ds_detail_price_row",
+                        "type": "hstack",
+                        "context": { "_spacing": 8, "_alignment": "center" },
+                        "children": [
+                          {
+                            "id": "ds_detail_price",
+                            "type": "text",
+                            "context": { "_text": "{{ '$' + @{item.price} }}" },
+                            "style": { "common": { "font": "title3", "foreground": { "color": "primary" } } }
+                          },
+                          {
+                            "id": "ds_detail_discount",
+                            "type": "text",
+                            "context": { "_text": "{{ '-' + @{item.discountPercentage} + '%' }}" },
+                            "style": {
+                              "common": {
+                                "font": "caption",
+                                "foreground": { "color": "white" },
+                                "background": { "type": "capsule", "id": "ds_disc_bg", "style": { "common": { "foreground": { "color": "#FF3B30" } } } }
+                              },
+                              "layout": { "padding": { "top": 3, "bottom": 3, "leading": 8, "trailing": 8 } }
+                            }
+                          },
+                          { "id": "ds_detail_price_spacer", "type": "spacer" },
+                          {
+                            "id": "ds_detail_rating_icon",
+                            "type": "image",
+                            "context": { "_source": "sf://star.fill" },
+                            "style": { "common": { "foreground": { "color": "orange" } }, "layout": { "width": 14 } }
+                          },
+                          {
+                            "id": "ds_detail_rating",
+                            "type": "text",
+                            "context": { "_text": "@{item.rating}" },
+                            "style": { "common": { "font": "subheadline", "foreground": { "color": "secondary" } } }
+                          }
+                        ]
+                      },
+                      {
+                        "id": "ds_detail_tags_row",
+                        "type": "hstack",
+                        "context": { "_spacing": 6 },
+                        "children": [
+                          {
+                            "id": "ds_detail_category_badge",
+                            "type": "text",
+                            "context": { "_text": "@{item.category}" },
+                            "style": {
+                              "common": {
+                                "font": "caption",
+                                "foreground": { "color": "white" },
+                                "background": { "type": "capsule", "id": "ds_cat_bg", "style": { "common": { "foreground": { "color": "indigo" } } } }
+                              },
+                              "layout": { "padding": { "top": 4, "bottom": 4, "leading": 10, "trailing": 10 } }
+                            }
+                          },
+                          {
+                            "id": "ds_detail_stock_badge",
+                            "type": "text",
+                            "context": { "_text": "@{item.availabilityStatus}" },
+                            "style": {
+                              "common": {
+                                "font": "caption",
+                                "foreground": { "color": "white" },
+                                "background": { "type": "capsule", "id": "ds_stock_bg", "style": { "common": { "foreground": { "color": "#34C759" } } } }
+                              },
+                              "layout": { "padding": { "top": 4, "bottom": 4, "leading": 10, "trailing": 10 } }
+                            }
+                          }
+                        ]
+                      },
+                      { "id": "ds_detail_divider1", "type": "divider" },
+                      {
+                        "id": "ds_detail_description",
+                        "type": "text",
+                        "context": { "_text": "@{item.description}" },
+                        "style": { "common": { "font": "body", "foreground": { "color": "secondary" } } }
+                      },
+                      { "id": "ds_detail_divider2", "type": "divider" },
+                      {
+                        "id": "ds_detail_info_grid",
+                        "type": "vstack",
+                        "context": { "_spacing": 10, "_alignment": "leading" },
+                        "children": [
+                          {
+                            "id": "ds_detail_shipping_row",
+                            "type": "hstack",
+                            "context": { "_spacing": 8, "_alignment": "center" },
+                            "children": [
+                              { "id": "ds_detail_ship_icon", "type": "image", "context": { "_source": "sf://shippingbox" }, "style": { "common": { "foreground": { "color": "blue" } }, "layout": { "width": 16 } } },
+                              { "id": "ds_detail_ship_text", "type": "text", "context": { "_text": "@{item.shippingInformation}" }, "style": { "common": { "font": "subheadline", "foreground": { "color": "secondary" } } } }
+                            ]
+                          },
+                          {
+                            "id": "ds_detail_warranty_row",
+                            "type": "hstack",
+                            "context": { "_spacing": 8, "_alignment": "center" },
+                            "children": [
+                              { "id": "ds_detail_warr_icon", "type": "image", "context": { "_source": "sf://shield.checkered" }, "style": { "common": { "foreground": { "color": "green" } }, "layout": { "width": 16 } } },
+                              { "id": "ds_detail_warr_text", "type": "text", "context": { "_text": "@{item.warrantyInformation}" }, "style": { "common": { "font": "subheadline", "foreground": { "color": "secondary" } } } }
+                            ]
+                          },
+                          {
+                            "id": "ds_detail_return_row",
+                            "type": "hstack",
+                            "context": { "_spacing": 8, "_alignment": "center" },
+                            "children": [
+                              { "id": "ds_detail_ret_icon", "type": "image", "context": { "_source": "sf://arrow.uturn.left" }, "style": { "common": { "foreground": { "color": "orange" } }, "layout": { "width": 16 } } },
+                              { "id": "ds_detail_ret_text", "type": "text", "context": { "_text": "@{item.returnPolicy}" }, "style": { "common": { "font": "subheadline", "foreground": { "color": "secondary" } } } }
+                            ]
+                          },
+                          {
+                            "id": "ds_detail_stock_row",
+                            "type": "hstack",
+                            "context": { "_spacing": 8, "_alignment": "center" },
+                            "children": [
+                              { "id": "ds_detail_stk_icon", "type": "image", "context": { "_source": "sf://cube.box" }, "style": { "common": { "foreground": { "color": "purple" } }, "layout": { "width": 16 } } },
+                              { "id": "ds_detail_stk_text", "type": "text", "context": { "_text": "{{ @{item.stock} + ' in stock · Min order: ' + @{item.minimumOrderQuantity} }}" }, "style": { "common": { "font": "subheadline", "foreground": { "color": "secondary" } } } }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "action": {
+        "repo": {
+          "id": "ds_refresh_action",
+          "input": {
+            "repositoryId": "ds_remote",
+            "operation": "read",
+            "params": {}
+          },
+          "output": {
+            "success": [
+              {
+                "state": {
+                  "id": "ds_set_remote_data",
+                  "input": { "web": "@{ds_refresh_action.products}", "isLoading": false, "isError": false },
+                  "output": {
+                    "success": [
+                      {
+                        "state": {
+                          "id": "ds_show_saving",
+                          "input": { "statusMessage": "Saving to local storage…", "statusIcon": "sf://arrow.down.circle", "showStatus": true, "isError": false },
+                          "output": {
+                            "success": [
+                              {
+                                "repo": {
+                                  "id": "ds_persist_local",
+                                  "input": {
+                                    "repositoryId": "ds_local",
+                                    "operation": "create",
+                                    "params": { "collection": "products", "documentId": "web_id", "body": { "data": "${web}" }, "rewrite": true }
+                                  },
+                                  "output": {
+                                    "success": [
+                                      {
+                                        "state": {
+                                          "id": "ds_saved_ok",
+                                          "input": { "statusMessage": "Saved to local storage", "statusIcon": "sf://checkmark.circle.fill", "showStatus": true, "isError": false },
+                                          "output": {
+                                            "success": [
+                                              { "interval": { "id": "ds_toast_timer", "input": { "delay": 3.0 }, "output": { "success": [
+                                                { "state": { "id": "ds_hide_toast", "input": { "showStatus": false } } },
+                                                { "interval": { "id": "ds_toast_timer", "input": { "cancel": true } } }
+                                              ] } } }
+                                            ]
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "failure": [
+                                      {
+                                        "state": {
+                                          "id": "ds_save_fail",
+                                          "input": { "statusMessage": "@{ds_persist_local.message}", "statusIcon": "sf://xmark.circle.fill", "showStatus": true, "isError": true },
+                                          "output": {
+                                            "success": [
+                                              { "interval": { "id": "ds_toast_timer_err", "input": { "delay": 3.0 }, "output": { "success": [
+                                                { "state": { "id": "ds_hide_toast_err", "input": { "showStatus": false } } },
+                                                { "interval": { "id": "ds_toast_timer_err", "input": { "cancel": true } } }
+                                              ] } } }
+                                            ]
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "failure": [
+              {
+                "state": {
+                  "id": "ds_fetch_error",
+                  "input": { "statusMessage": "No connection. Check your network.", "statusIcon": "sf://wifi.slash", "showStatus": true, "isError": true, "isLoading": false },
+                  "output": {
+                    "success": [
+                      { "interval": { "id": "ds_toast_timer_net", "input": { "delay": 5.0 }, "output": { "success": [
+                        { "state": { "id": "ds_hide_toast_net", "input": { "showStatus": false } } },
+                        { "interval": { "id": "ds_toast_timer_net", "input": { "cancel": true } } }
+                      ] } } }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "children": [
+    {
+      "id": "ds_root_zstack",
+      "type": "zstack",
+      "context": { "_alignment": "top" },
+      "children": [
+        {
+          "id": "ds_nav",
+          "type": "navigation",
+          "children": [
+            {
+              "id": "ds_search_row",
+              "type": "hstack",
+              "context": { "_spacing": 8 },
+              "style": {
+                "common": { "background": { "color": { "light": "#F2F2F7", "dark": "#1C1C1E" } }, "cornerRadius": 12 },
+                "layout": { "padding": { "top": 8, "bottom": 8, "leading": 12, "trailing": 12 } }
+              },
+              "children": [
+                {
+                  "id": "ds_search_icon",
+                  "type": "image",
+                  "context": { "_source": "sf://magnifyingglass" },
+                  "style": { "common": { "foreground": { "color": "secondary" }, "font": { "kind": "title2" } }, "layout": { "width": 18 } }
+                },
+                {
+                  "id": "ds_search_field",
+                  "type": "textfield",
+                  "context": {
+                    "_label": "Search products",
+                    "_text": "${search}",
+                    "_focused": "{{ ${focused} == 'ds_search_field' }}",
+                    "_debounce": 0.3
+                  }
+                }
+              ]
+            },
+            {
+              "id": "ds_product_list",
+              "type": "list",
+              "style": {
+                "navigation": {
+                  "navigationTitle": "Products",
+                  "navigationBarTitleDisplayMode": "large",
+                  "toolbarTrailing": {
+                    "id": "ds_close_btn",
+                    "type": "button",
+                    "style": { "button": { "custom": {
+                      "layout": { "width": 36, "height": 36 },
+                      "common": { "cornerRadius": 18, "background": { "light": "#EFEFEF", "dark": "#2C2C2E" } }
+                    } } },
+                    "children": [
+                      { "id": "ds_close_icon", "type": "image", "context": { "_source": "sf://xmark" },
+                        "style": { "layout": { "width": 12, "height": 12 },
+                                   "common": { "foreground": { "light": "#262626", "dark": "#FFFFFF" },
+                                               "font": { "kind": "caption", "weight": "bold" } } } }
+                    ],
+                    "events": { "onTap": [{ "state": { "id": "ds_close_action", "input": { "onClose": true } } }] }
+                  }
+                }
+              },
+              "children": [
+                {
+                  "id": "ds_product_dynamic",
+                  "type": "dynamic",
+                  "context": {
+                    "_data": "${web[title ~ ${search}]}",
+                    "_isLoading": "${isLoading}",
+                    "_skeletonRows": 8
+                  },
+                  "prototype": {
+                    "id": "ds_product_row",
+                    "type": "hstack",
+                    "context": { "_spacing": 12, "_alignment": "center" },
+                    "style": {
+                      "layout": { "padding": { "top": 6, "bottom": 6, "leading": 0, "trailing": 0 } },
+                      "swipe": {
+                        "trailing": {
+                          "edge": "trailing",
+                          "allowsFullSwipe": true,
+                          "content": {
+                            "id": "ds_delete_btn",
+                            "type": "button",
+                            "style": { "common": { "tint": "red" } },
+                            "children": [
+                              { "id": "ds_delete_icon", "type": "image", "context": { "_source": "sf://trash" }, "style": { "layout": { "height": 20 } } }
+                            ],
+                            "events": {
+                              "onTap": [
+                                {
+                                  "state": {
+                                    "id": "ds_set_delete_id",
+                                    "input": { "deletedId": "@{item.id}" },
+                                    "output": { "success": [{ "state": { "id": "ds_remove_item", "input": { "web": "${web[id != ${deletedId}]}" } } }] }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "children": [
+                      {
+                        "id": "ds_product_image",
+                        "type": "image",
+                        "context": { "_source": "@{item.thumbnail}", "_placeholder": "sf://photo", "_contentMode": "fit", "_isLoading": "${isLoading}" },
+                        "style": {
+                          "layout": { "width": 64, "height": 64 },
+                          "common": { "cornerRadius": 12, "shadow": { "color": { "color": "black", "opacity": 0.08 }, "radius": 4, "y": 2 } }
+                        }
+                      },
+                      {
+                        "id": "ds_product_info",
+                        "type": "vstack",
+                        "context": { "_spacing": 3, "_alignment": "leading", "_destination": "dp://ds_detail_screen" },
+                        "children": [
+                          {
+                            "id": "ds_product_title",
+                            "type": "text",
+                            "context": { "_text": "@{item.title}", "_skeletonHeight": 16, "_isLoading": "${isLoading}" },
+                            "style": { "common": { "font": { "kind": "body", "weight": "semibold" }, "foreground": { "color": "primary" } }, "text": { "lineLimit": 1 } }
+                          },
+                          {
+                            "id": "ds_product_brand_cat",
+                            "type": "text",
+                            "context": { "_text": "{{ @{item.brand} + ' · ' + @{item.category} }}", "_skeletonHeight": 12, "_isLoading": "${isLoading}" },
+                            "style": { "common": { "font": "caption", "foreground": { "color": "secondary" } } }
+                          },
+                          {
+                            "id": "ds_product_price_row",
+                            "type": "hstack",
+                            "context": { "_spacing": 6, "_alignment": "center" },
+                            "children": [
+                              {
+                                "id": "ds_product_price",
+                                "type": "text",
+                                "context": { "_text": "{{ '$' + @{item.price} }}", "_skeletonHeight": 10, "_isLoading": "${isLoading}" },
+                                "style": { "common": { "font": { "kind": "callout", "weight": "semibold" }, "foreground": { "color": "primary" } } }
+                              },
+                              {
+                                "id": "ds_product_star",
+                                "type": "image",
+                                "context": { "_source": "sf://star.fill" },
+                                "style": { "common": { "foreground": { "color": "orange" } }, "layout": { "width": 10 } }
+                              },
+                              {
+                                "id": "ds_product_rating",
+                                "type": "text",
+                                "context": { "_text": "@{item.rating}", "_skeletonHeight": 10, "_isLoading": "${isLoading}" },
+                                "style": { "common": { "font": "caption", "foreground": { "color": "secondary" } } }
+                              },
+                              { "id": "ds_product_row_spacer", "type": "spacer" },
+                              {
+                                "id": "ds_product_stock",
+                                "type": "text",
+                                "context": { "_text": "@{item.availabilityStatus}", "_skeletonHeight": 10, "_isLoading": "${isLoading}" },
+                                "style": { "common": { "font": "caption", "foreground": { "color": "#34C759" } } }
+                              }
+                            ]
+                          }
+                        ],
+                        "events": {
+                          "onTap": [{ "navigate": { "id": "ds_navigate_detail", "input": { "operation": "push", "source": "@{_destination}" } } }]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "events": {
+                  "onRefresh": [
+                    {
+                      "state": {
+                        "id": "ds_refresh_start",
+                        "input": { "showStatus": false },
+                        "output": { "success": [{ "template": { "id": "ds_trigger_refresh", "input": "ds_refresh_action" } }] }
+                      }
+                    }
+                  ]
+              }
+            }
+          ]
+        },
+
+        {
+          "id": "ds_toast_wrapper",
+          "type": "vstack",
+          "style": {
+            "layout": { "padding": { "top": 8, "leading": 40, "trailing": 40 } },
+            "common": { "opacity": "{{ ${showStatus} ? 1 : 0 }}", "scale": "{{ ${showStatus} ? 1 : 0.8 }}" },
+            "animation": { "kind": "spring", "value": "${showStatus}", "duration": 0.4, "bounce": 0.3 }
+          },
+          "children": [
+            {
+              "id": "ds_toast",
+              "type": "hstack",
+              "context": { "_spacing": 8, "_alignment": "center" },
+              "style": {
+                "common": { "background": { "material": "ultraThin" }, "cornerRadius": 22 },
+                "layout": { "padding": { "top": 10, "bottom": 10, "leading": 16, "trailing": 16 } },
+                "shadow": { "color": "black", "radius": 8, "x": 0, "y": 4, "opacity": 0.15 }
+              },
+              "children": [
+                {
+                  "id": "ds_toast_icon",
+                  "type": "image",
+                  "context": { "_source": "${statusIcon}" },
+                  "style": { "common": { "foreground": { "color": "{{ ${isError} ? '#FF3B30' : '#34C759' }}" } }, "layout": { "width": 18 } }
+                },
+                {
+                  "id": "ds_toast_text",
+                  "type": "text",
+                  "context": { "_text": "${statusMessage}" },
+                  "style": { "common": { "font": { "kind": "subheadline", "weight": "medium" }, "foreground": { "color": "primary" } } }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "events": {
+    "onAppear": [
+      {
+        "state": {
+          "id": "ds_init_loading",
+          "input": { "isLoading": true, "showStatus": false, "onClose": false },
+          "output": {
+            "success": [
+              {
+                "repo": {
+                  "id": "ds_load_local",
+                  "input": { "repositoryId": "ds_local", "operation": "read", "params": { "collection": "products", "documentId": "web_id" } },
+                  "output": {
+                    "success": [
+                      {
+                        "state": {
+                          "id": "ds_restore_data",
+                          "input": { "web": "@{ds_load_local.data}", "isLoading": false, "statusMessage": "Loaded from local storage", "statusIcon": "sf://internaldrive", "showStatus": true, "isError": false },
+                          "output": {
+                            "success": [
+                              { "interval": { "id": "ds_toast_timer", "input": { "delay": 3.0 }, "output": { "success": [
+                                { "state": { "id": "ds_hide_toast_local", "input": { "showStatus": false } } },
+                                { "interval": { "id": "ds_toast_timer", "input": { "cancel": true } } }
+                              ] } } }
+                            ]
+                          }
+                        }
+                      }
+                    ],
+                    "failure": [
+                      { "template": { "id": "ds_first_fetch", "input": "ds_refresh_action" } }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

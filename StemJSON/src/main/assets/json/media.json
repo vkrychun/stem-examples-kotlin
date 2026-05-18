@@ -1,0 +1,242 @@
+{
+  "id": "media_showcase",
+  "type": "module",
+  "context": { "_title": "Media", "_icon": "play.rectangle.on.rectangle.fill" },
+  "state": {
+    "onClose": false,
+    "mapPosition": {
+      "region": {
+        "center": { "latitude": 37.3349, "longitude": -122.0090 },
+        "span":   { "lat": 0.3, "lon": 0.3 }
+      }
+    },
+    "mapRegion": {
+      "center": { "latitude": 37.3349, "longitude": -122.0090 },
+      "span":   { "lat": 0.3, "lon": 0.3 }
+    },
+    "locationName":  "Apple Park",
+    "locationError": ""
+  },
+  "dependencies": [
+    { "service": { "location": { "id": "dep_location" } } }
+  ],
+  "children": [
+    {
+      "id": "med_nav", "type": "navigation",
+      "children": [
+        {
+          "id": "med_root", "type": "vstack",
+          "context": { "_spacing": 0 },
+          "style": { "layout": { "maxWidth": "infinity", "maxHeight": "infinity" },
+                     "common": { "background": { "light": "#F2F2F7", "dark": "#000000" } },
+                     "navigation": {
+                       "navigationTitle": "Media",
+                       "toolbarTrailing": {
+                         "id": "med_close", "type": "button",
+                         "style": { "button": { "custom": {
+                           "layout": { "width": 36, "height": 36 },
+                           "common": { "cornerRadius": 18, "background": { "light": "#EFEFEF", "dark": "#2C2C2E" } }
+                         } } },
+                         "children": [
+                           { "id": "med_close_icon", "type": "image", "context": { "_source": "sf://xmark" },
+                             "style": { "layout": { "width": 12, "height": 12 },
+                                        "common": { "foreground": { "light": "#262626", "dark": "#FFFFFF" },
+                                                    "font": { "kind": "caption", "weight": "bold" } } } }
+                         ],
+                         "events": { "onTap": [{ "state": { "id": "med_close_act", "input": { "onClose": true } } }] }
+                       }
+                     } },
+          "children": [
+
+            { "id": "med_scroll", "type": "scroll",
+              "children": [
+                { "id": "med_stack", "type": "vstack",
+                  "context": { "_spacing": 16 },
+                  "style": { "layout": { "padding": { "horizontal": 16, "top": 8, "bottom": 32 } } },
+                  "children": [
+
+                    { "id": "med_intro", "type": "text",
+                      "context": { "_text": "Showcase of media-heavy components: video (§4.2), pdf (§4.2), map (§4.2), and the universal `media` component that delegates based on file extension. The PDF opens full-screen on tap." },
+                      "style": { "common": { "font": "footnote", "foreground": { "light": "#3C3C43", "dark": "#EBEBF5" } } } },
+
+                    { "id": "med_video_card", "type": "vstack",
+                      "context": { "_spacing": 8 },
+                      "style": { "layout": { "maxWidth": "infinity", "padding": 16 },
+                                 "common": { "background": { "light": "#FFFFFF", "dark": "#1C1C1E" }, "cornerRadius": 14 } },
+                      "children": [
+                        { "id": "med_video_h", "type": "text",
+                          "context": { "_text": "video — with controls, looping, muted" },
+                          "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+                        { "id": "med_video", "type": "video",
+                          "context": {
+                            "_source": "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8",
+                            "_placeholder": "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/ref_master_256x144_400k.jpg",
+                            "_autoplay": true, "_loop": true, "_muted": true
+                          },
+                          "style": { "layout": { "height": 220, "maxWidth": "infinity" },
+                                     "common": { "cornerRadius": 12 },
+                                     "video": { "controls": true, "gravity": "resizeAspectFill" } } }
+                      ]
+                    },
+
+                    { "id": "med_pdf_card", "type": "link",
+                      "destination": {
+                        "id": "pdf_detail", "type": "module",
+                        "context": { "_title": "PDF" },
+                        "state": { "onClose": false },
+                        "children": [
+                          { "id": "pdf_detail_root", "type": "vstack",
+                            "context": { "_spacing": 0 },
+                            "style": { "layout": { "maxWidth": "infinity", "maxHeight": "infinity" },
+                                       "common": { "background": { "light": "#FFFFFF", "dark": "#000000" } },
+                                       "navigation": { "navigationTitle": "New features available with iOS 26",
+                                                       "navigationBarTitleDisplayMode": "inline" } },
+                            "children": [
+                              { "id": "pdf_detail_view", "type": "pdf",
+                                "context": { "_source": "https://www.apple.com/au/os/pdf/All_New_Features_iOS_26_Sept_2025_AU_Final.pdf", "_page": 1 },
+                                "style": { "layout": { "maxWidth": "infinity", "maxHeight": "infinity" },
+                                           "pdf": { "displayMode": "singlePageContinuous", "autoScales": true, "showPageNumbers": true } } }
+                            ]
+                          }
+                        ]
+                      },
+                      "children": [
+                        { "id": "med_pdf_card_body", "type": "vstack",
+                          "context": { "_spacing": 8 },
+                          "style": { "layout": { "maxWidth": "infinity", "padding": 16 },
+                                     "common": { "background": { "light": "#FFFFFF", "dark": "#1C1C1E" }, "cornerRadius": 14 } },
+                          "children": [
+                            { "id": "med_pdf_row", "type": "hstack",
+                              "context": { "_spacing": 12, "_alignment": "center" },
+                              "children": [
+                                { "id": "med_pdf_icon", "type": "image",
+                                  "context": { "_source": "sf://doc.richtext.fill" },
+                                  "style": { "layout": { "width": 36, "height": 36 },
+                                             "common": { "foreground": "#FF3B30" } } },
+                                { "id": "med_pdf_txt", "type": "vstack",
+                                  "context": { "_spacing": 2, "_alignment": "leading" },
+                                  "style": { "layout": { "maxWidth": "infinity" } },
+                                  "children": [
+                                    { "id": "med_pdf_h", "type": "text",
+                                      "context": { "_text": "New features available with iOS 26" },
+                                      "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+                                    { "id": "med_pdf_sub", "type": "text",
+                                      "context": { "_text": "Apple Inc. · 18 pages · tap to open full screen" },
+                                      "style": { "common": { "font": "caption", "foreground": { "light": "#8E8E93", "dark": "#AEAEB2" } } } }
+                                  ]
+                                },
+                                { "id": "med_pdf_chev", "type": "image",
+                                  "context": { "_source": "sf://chevron.right" },
+                                  "style": { "layout": { "width": 12, "height": 12 },
+                                             "common": { "foreground": { "light": "#8E8E93", "dark": "#AEAEB2" } } } }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+
+                    { "id": "med_map_card", "type": "vstack",
+                      "context": { "_spacing": 8 },
+                      "style": { "layout": { "maxWidth": "infinity", "padding": 16 },
+                                 "common": { "background": { "light": "#FFFFFF", "dark": "#1C1C1E" }, "cornerRadius": 14 } },
+                      "children": [
+                        { "id": "med_map_h", "type": "text",
+                          "context": { "_text": "map — annotated region + external location service" },
+                          "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+                        { "id": "med_map_hint", "type": "text",
+                          "context": { "_text": "Starts framed on Apple Park. Tap Use my location to invoke LocationService (a host-registered external service, see StemDependencies) — on success the returned coordinates flow into state and both the camera and the pin move to the device's position." },
+                          "style": { "common": { "font": "caption", "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                        { "id": "med_map", "type": "map",
+                          "context": { "_position": "${mapPosition}",
+                                       "_region":   "${mapRegion}",
+                                       "_name":     "${locationName}",
+                                       "_debounce": 0.2 },
+                          "style": { "layout": { "height": 280, "maxWidth": "infinity" },
+                                     "common": { "cornerRadius": 12 },
+                                     "map": { "kind": "standard" } },
+                          "children": [
+                            { "id": "med_map_pin", "type": "image",
+                              "context": { "_source": "sf://mappin.circle.fill" },
+                              "style": { "layout": { "width": 28, "height": 28 },
+                                         "common": { "foreground": "#FF3B30" } } }
+                          ] },
+                        { "id": "med_map_btn", "type": "button",
+                          "context": { "_label": "Use my location", "_image": "sf://location.circle.fill" },
+                          "style": { "button": { "custom": {
+                            "layout": { "maxWidth": "infinity", "minHeight": 44 },
+                            "common": { "foreground": "white", "cornerRadius": 10,
+                                        "background": "#007AFF",
+                                        "font": { "kind": "subheadline", "weight": "semibold" } }
+                          } } },
+                          "events": { "onTap": [
+                            { "state": { "id": "med_clear_err", "input": { "locationError": "" } } },
+                            { "service": { "id": "act_fetch_location",
+                                           "input": { "serviceId": "dep_location", "params": {} },
+                                           "output": {
+                                             "success": [{ "state": {
+                                                 "id": "act_center_map",
+                                                 "input": {
+                                                   "mapPosition": {
+                                                     "region": {
+                                                       "center": { "latitude":  "@{act_fetch_location.latitude}",
+                                                                   "longitude": "@{act_fetch_location.longitude}" },
+                                                       "span":   { "lat": 0.3, "lon": 0.3 }
+                                                     }
+                                                   },
+                                                   "mapRegion": {
+                                                     "center": { "latitude":  "@{act_fetch_location.latitude}",
+                                                                 "longitude": "@{act_fetch_location.longitude}" },
+                                                     "span":   { "lat": 0.3, "lon": 0.3 }
+                                                   },
+                                                   "locationName": "You are here"
+                                                 }
+                                             } }],
+                                             "failure": [{ "state": {
+                                                 "id": "act_loc_err",
+                                                 "input": { "locationError": "@{act_fetch_location.message}" }
+                                             } }]
+                                           }
+                            } }
+                          ] } },
+                        { "id": "med_map_err", "type": "conditional",
+                          "context": {
+                            "_condition": "{{ notEmpty(${locationError}) }}",
+                            "_trueComponent": {
+                              "id": "med_map_err_text", "type": "text",
+                              "context": { "_text": "{{ 'Location unavailable: ' + ${locationError} }}" },
+                              "style": { "common": { "font": "caption", "foreground": "#FF3B30" } }
+                            },
+                            "_falseComponent": { "id": "med_map_err_none", "type": "empty" }
+                          } }
+                      ]
+                    },
+
+                    { "id": "med_universal_card", "type": "vstack",
+                      "context": { "_spacing": 8 },
+                      "style": { "layout": { "maxWidth": "infinity", "padding": 16 },
+                                 "common": { "background": { "light": "#FFFFFF", "dark": "#1C1C1E" }, "cornerRadius": 14 } },
+                      "children": [
+                        { "id": "med_uni_h", "type": "text",
+                          "context": { "_text": "media — universal viewer (extension-driven)" },
+                          "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+                        { "id": "med_uni_hint", "type": "text",
+                          "context": { "_text": "The media component inspects the URL's extension and delegates to image / video / pdf. The URL below ends in .jpg — so media renders an image." },
+                          "style": { "common": { "font": "caption", "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                        { "id": "med_uni", "type": "media",
+                          "context": { "_source": "https://picsum.photos/seed/stemjson/800/400", "_kind": "auto", "_placeholder": "sf://photo.fill" },
+                          "style": { "layout": { "height": 200, "maxWidth": "infinity" },
+                                     "common": { "cornerRadius": 12 } } }
+                      ]
+                    }
+
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,229 @@
+{
+  "id": "system_literals",
+  "type": "module",
+  "context": { "_title": "System", "_icon": "iphone.gen3" },
+  "state": { "onClose": false },
+  "dependencies": [
+    { "component": {
+        "id": "dep_sys_row", "type": "vstack",
+        "context": { "_spacing": 3, "code": "", "desc": "", "value": "" },
+        "style": { "layout": { "maxWidth": "infinity", "padding": { "vertical": 8 } } },
+        "children": [
+          { "id": "dep_sys_row_code", "type": "text",
+            "context": { "_text": "@{code}" },
+            "style": { "common": { "font": { "kind": "system", "size": 14, "weight": "semibold", "design": "monospaced" },
+                                   "foreground": { "light": "#000000", "dark": "#FFFFFF" } } } },
+          { "id": "dep_sys_row_desc", "type": "text",
+            "context": { "_text": "@{desc}" },
+            "style": { "common": { "font": "caption",
+                                   "foreground": { "light": "#636366", "dark": "#AEAEB2" } } } },
+          { "id": "dep_sys_row_value", "type": "text",
+            "context": { "_text": "@{value}" },
+            "style": { "layout": { "padding": { "top": 4 } },
+                       "common": { "font": { "kind": "system", "size": 15, "design": "monospaced" },
+                                   "foreground": { "light": "#007AFF", "dark": "#0A84FF" } } } }
+        ]
+      }
+    }
+  ],
+  "children": [
+    {
+      "id": "sys_root", "type": "vstack",
+      "context": { "_spacing": 0 },
+      "style": { "layout": { "maxWidth": "infinity", "maxHeight": "infinity" },
+                 "common": { "background": { "light": "#F2F2F7", "dark": "#000000" } } },
+      "children": [
+
+        { "id": "sys_head", "type": "hstack",
+          "context": { "_alignment": "center" },
+          "style": { "layout": { "maxWidth": "infinity", "padding": { "horizontal": 16, "top": 16, "bottom": 8 } } },
+          "children": [
+            { "id": "sys_title", "type": "text",
+              "context": { "_text": "System literals" },
+              "style": { "common": { "font": { "kind": "system", "size": 26, "weight": "bold", "design": "rounded" } } } },
+            { "id": "sys_sp", "type": "spacer" },
+            { "id": "sys_close", "type": "button",
+              "style": { "button": { "custom": {
+                "layout": { "width": 36, "height": 36 },
+                "common": { "cornerRadius": 18, "background": { "light": "#EFEFEF", "dark": "#2C2C2E" } }
+              } } },
+              "children": [
+                { "id": "sys_close_icon", "type": "image", "context": { "_source": "sf://xmark" },
+                  "style": { "layout": { "width": 12, "height": 12 },
+                             "common": { "foreground": { "light": "#262626", "dark": "#FFFFFF" },
+                                         "font": { "kind": "caption", "weight": "bold" } } } }
+              ],
+              "events": { "onTap": [{ "state": { "id": "sys_close_act", "input": { "onClose": true } } }] } }
+          ]
+        },
+
+        { "id": "sys_scroll", "type": "scroll",
+          "children": [
+            { "id": "sys_body", "type": "vstack",
+              "context": { "_spacing": 16 },
+              "style": { "layout": { "padding": { "horizontal": 16, "bottom": 32 } } },
+              "children": [
+
+                { "id": "sys_intro", "type": "text",
+                  "context": { "_text": "The #{…} form exposes system-provided values to expressions and source strings. Each row shows the literal exactly as you type it in JSON, a short description of what it returns, and its current live value." },
+                  "style": { "common": { "font": "footnote", "foreground": { "light": "#3C3C43", "dark": "#EBEBF5" } } } },
+
+                { "id": "sys_dates_card", "type": "vstack",
+                  "context": { "_spacing": 0 },
+                  "style": { "layout": { "maxWidth": "infinity", "padding": 16 },
+                             "common": { "background": { "light": "#FFFFFF", "dark": "#1C1C1E" }, "cornerRadius": 14 } },
+                  "children": [
+                    { "id": "sys_dates_h", "type": "text",
+                      "context": { "_text": "dates" },
+                      "style": { "layout": { "padding": { "bottom": 4 } },
+                                 "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+
+                    { "id": "row_now", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{now}' }}",
+                                   "desc":  "current date and time, to the second",
+                                   "value": "#{now}" } },
+                    { "id": "row_today", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{today}' }}",
+                                   "desc":  "midnight of the current day (local)",
+                                   "value": "#{today}" } },
+                    { "id": "row_yesterday", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{yesterday}' }}",
+                                   "desc":  "midnight of the previous day",
+                                   "value": "#{yesterday}" } },
+                    { "id": "row_tomorrow", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{tomorrow}' }}",
+                                   "desc":  "midnight of the next day",
+                                   "value": "#{tomorrow}" } },
+                    { "id": "row_endofweek", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{endofweek}' }}",
+                                   "desc":  "last day of the current week, per device locale",
+                                   "value": "#{endofweek}" } },
+                    { "id": "row_startofmonth", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{startofmonth}' }}",
+                                   "desc":  "first moment of the current month",
+                                   "value": "#{startofmonth}" } },
+                    { "id": "row_endofmonth", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{endofmonth}' }}",
+                                   "desc":  "last moment of the current month",
+                                   "value": "#{endofmonth}" } }
+                  ]
+                },
+
+                { "id": "sys_locale_card", "type": "vstack",
+                  "context": { "_spacing": 0 },
+                  "style": { "layout": { "maxWidth": "infinity", "padding": 16 },
+                             "common": { "background": { "light": "#FFFFFF", "dark": "#1C1C1E" }, "cornerRadius": 14 } },
+                  "children": [
+                    { "id": "sys_locale_h", "type": "text",
+                      "context": { "_text": "locale & region" },
+                      "style": { "layout": { "padding": { "bottom": 4 } },
+                                 "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+
+                    { "id": "row_locale", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{locale}' }}",
+                                   "desc":  "device locale identifier (language_Region)",
+                                   "value": "#{locale}" } },
+                    { "id": "row_language", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{language}' }}",
+                                   "desc":  "ISO language code of the active locale",
+                                   "value": "#{language}" } },
+                    { "id": "row_currency", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{currency}' }}",
+                                   "desc":  "ISO 4217 currency code for the region",
+                                   "value": "#{currency}" } },
+                    { "id": "row_timezone", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{timezone}' }}",
+                                   "desc":  "IANA time zone identifier",
+                                   "value": "#{timezone}" } }
+                  ]
+                },
+
+                { "id": "sys_device_card", "type": "vstack",
+                  "context": { "_spacing": 0 },
+                  "style": { "layout": { "maxWidth": "infinity", "padding": 16 },
+                             "common": { "background": { "light": "#FFFFFF", "dark": "#1C1C1E" }, "cornerRadius": 14 } },
+                  "children": [
+                    { "id": "sys_device_h", "type": "text",
+                      "context": { "_text": "device" },
+                      "style": { "layout": { "padding": { "bottom": 4 } },
+                                 "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+
+                    { "id": "row_device_type", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{device_type}' }}",
+                                   "desc":  "phone · pad · mac · vision · other",
+                                   "value": "#{device_type}" } },
+                    { "id": "row_device", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{device}' }}",
+                                   "desc":  "UIDevice.current.model (e.g. iPhone, iPad)",
+                                   "value": "#{device}" } },
+                    { "id": "row_systemname", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{systemname}' }}",
+                                   "desc":  "UIDevice.current.systemName",
+                                   "value": "#{systemname}" } },
+                    { "id": "row_systemversion", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{systemversion}' }}",
+                                   "desc":  "full OS version string from ProcessInfo",
+                                   "value": "#{systemversion}" } },
+                    { "id": "row_user", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{user}' }}",
+                                   "desc":  "identifierForVendor UUID — stable per app + device",
+                                   "value": "#{user}" } }
+                  ]
+                },
+
+                { "id": "sys_ui_card", "type": "vstack",
+                  "context": { "_spacing": 0 },
+                  "style": { "layout": { "maxWidth": "infinity", "padding": 16 },
+                             "common": { "background": { "light": "#FFFFFF", "dark": "#1C1C1E" }, "cornerRadius": 14 } },
+                  "children": [
+                    { "id": "sys_ui_h", "type": "text",
+                      "context": { "_text": "ui context" },
+                      "style": { "layout": { "padding": { "bottom": 4 } },
+                                 "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+                    { "id": "sys_ui_hint", "type": "text",
+                      "context": { "_text": "Rotate the device or enter Split View on iPad to see these change." },
+                      "style": { "layout": { "padding": { "bottom": 4 } },
+                                 "common": { "font": "caption", "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+
+                    { "id": "row_orientation", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{orientation}' }}",
+                                   "desc":  "portrait · landscape — tracks the active scene",
+                                   "value": "#{orientation}" } },
+                    { "id": "row_horizontal_size_class", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{horizontal_size_class}' }}",
+                                   "desc":  "compact on phones, regular on iPad full-screen",
+                                   "value": "#{horizontal_size_class}" } },
+                    { "id": "row_is_split_view", "type": "template",
+                      "context": { "_source": "dp://dep_sys_row",
+                                   "code":  "{{ '#{is_split_view}' }}",
+                                   "desc":  "true when the app is in Split View or Slide Over on iPad",
+                                   "value": "#{is_split_view}" } }
+                  ]
+                }
+
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

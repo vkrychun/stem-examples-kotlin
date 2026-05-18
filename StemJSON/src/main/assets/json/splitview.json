@@ -1,0 +1,117 @@
+{
+  "id": "splitview_demo",
+  "type": "module",
+  "context": { "_title": "Split View", "_icon": "sidebar.left" },
+  "state": {
+    "onClose": false,
+    "selectedId": "a",
+    "items": [
+      { "id": "a", "name": "Airbnb",        "subtitle": "Travel",    "icon": "airplane",           "color": "#FF5A5F",
+        "summary": "Book unique stays and experiences hosted by locals. Spans from city apartments to desert yurts." },
+      { "id": "b", "name": "Basecamp",      "subtitle": "Work",      "icon": "tent.fill",          "color": "#34C759",
+        "summary": "Project management stripped of the fluff — message boards, to-dos, schedules, and docs per project." },
+      { "id": "c", "name": "Canva",         "subtitle": "Design",    "icon": "paintpalette.fill",  "color": "#00C4CC",
+        "summary": "Drag-and-drop design for non-designers. Social posts, slide decks, and print-ready exports." },
+      { "id": "d", "name": "Discord",       "subtitle": "Community", "icon": "bubble.left.and.bubble.right.fill", "color": "#5865F2",
+        "summary": "Text, voice, and video for communities around games, hobbies, and study groups." },
+      { "id": "e", "name": "Evernote",      "subtitle": "Notes",     "icon": "note.text",          "color": "#2DBE60",
+        "summary": "Capture notes, clip web pages, and tag everything. Strong search across the entire archive." },
+      { "id": "f", "name": "Figma",         "subtitle": "Design",    "icon": "square.grid.3x3.fill", "color": "#A259FF",
+        "summary": "Collaborative interface design in the browser. Version history and component libraries built in." }
+    ]
+  },
+  "children": [
+    { "id": "sv_split", "type": "splitview",
+      "context": { "_columnVisibility": "automatic" },
+      "style": { "splitView": { "preferred": "balanced", "visibility": "all",
+                                 "sidebarWidth": { "min": 220, "ideal": 280, "max": 340 } } },
+      "children": [
+
+        { "id": "sv_sidebar", "type": "vstack",
+          "context": { "_spacing": 0 },
+          "style": { "layout": { "maxWidth": "infinity", "maxHeight": "infinity" },
+                     "common": { "background": { "light": "#F2F2F7", "dark": "#1C1C1E" } },
+                     "navigation": {
+                       "navigationTitle": "Apps",
+                       "toolbarTrailing": {
+                         "id": "sv_close", "type": "button",
+                         "style": { "button": { "custom": {
+                           "layout": { "width": 36, "height": 36 },
+                           "common": { "cornerRadius": 18, "background": { "light": "#EFEFEF", "dark": "#2C2C2E" } }
+                         } } },
+                         "children": [
+                           { "id": "sv_close_icon", "type": "image", "context": { "_source": "sf://xmark" },
+                             "style": { "layout": { "width": 12, "height": 12 },
+                                        "common": { "foreground": { "light": "#262626", "dark": "#FFFFFF" },
+                                                    "font": { "kind": "caption", "weight": "bold" } } } }
+                         ],
+                         "events": { "onTap": [{ "state": { "id": "sv_close_act", "input": { "onClose": true } } }] }
+                       }
+                     } },
+          "children": [
+
+            { "id": "sv_list_scroll", "type": "scroll",
+              "children": [
+                { "id": "sv_list", "type": "dynamic",
+                  "context": { "_data": "${items}" },
+                  "prototype": {
+                    "id": "sv_row", "type": "hstack",
+                    "context": { "_spacing": 12, "_alignment": "center" },
+                    "style": { "layout": { "maxWidth": "infinity", "padding": { "horizontal": 14, "vertical": 10 } },
+                               "common": { "background": "{{ ${selectedId} == @{item.id} ? '#E3F2FD' : '#FFFFFF' }}" } },
+                    "events": { "onTap": [
+                      { "state": { "id": "sv_select", "input": { "selectedId": "@{item.id}" } } }
+                    ] },
+                    "children": [
+                      { "id": "sv_row_icon", "type": "image",
+                        "context": { "_source": "{{ 'sf://' + @{item.icon} }}" },
+                        "style": { "layout": { "width": 22, "height": 22 },
+                                   "common": { "foreground": "@{item.color}" } } },
+                      { "id": "sv_row_txt", "type": "vstack",
+                        "context": { "_spacing": 1 },
+                        "style": { "layout": { "maxWidth": "infinity", "alignment": "leading" } },
+                        "children": [
+                          { "id": "sv_row_name", "type": "text",
+                            "context": { "_text": "@{item.name}" },
+                            "style": { "common": { "font": { "kind": "body", "weight": "semibold" } } } },
+                          { "id": "sv_row_sub", "type": "text",
+                            "context": { "_text": "@{item.subtitle}" },
+                            "style": { "common": { "font": "caption", "foreground": { "light": "#8E8E93", "dark": "#AEAEB2" } } } }
+                        ] }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+
+        { "id": "sv_detail", "type": "vstack",
+          "context": { "_spacing": 16 },
+          "style": { "layout": { "maxWidth": "infinity", "maxHeight": "infinity", "padding": 24, "alignment": "leading" },
+                     "common": { "background": { "light": "#FFFFFF", "dark": "#000000" } },
+                     "navigation": { "navigationTitle": "{{ first(${items[id ~ ${selectedId}]}).name }}" } },
+          "children": [
+            { "id": "sv_detail_icon", "type": "image",
+              "context": { "_source": "{{ 'sf://' + first(${items[id ~ ${selectedId}]}).icon }}" },
+              "style": { "layout": { "width": 64, "height": 64 },
+                         "common": { "foreground": "{{ first(${items[id ~ ${selectedId}]}).color }}" } } },
+            { "id": "sv_detail_name", "type": "text",
+              "context": { "_text": "{{ first(${items[id ~ ${selectedId}]}).name }}" },
+              "style": { "common": { "font": { "kind": "system", "size": 34, "weight": "bold", "design": "rounded" } } } },
+            { "id": "sv_detail_sub", "type": "text",
+              "context": { "_text": "{{ first(${items[id ~ ${selectedId}]}).subtitle }}" },
+              "style": { "common": { "font": { "kind": "title3", "weight": "regular" },
+                                     "foreground": { "light": "#8E8E93", "dark": "#AEAEB2" } } } },
+            { "id": "sv_detail_div", "type": "divider" },
+            { "id": "sv_detail_summary", "type": "text",
+              "context": { "_text": "{{ first(${items[id ~ ${selectedId}]}).summary }}" },
+              "style": { "common": { "font": "body" } } },
+            { "id": "sv_detail_spacer", "type": "spacer" }
+          ]
+        }
+
+      ]
+    }
+  ]
+}

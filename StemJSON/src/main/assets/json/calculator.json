@@ -1,0 +1,875 @@
+{
+  "id": "smart_calculator_root",
+  "type": "module",
+  "context": {
+    "_title": "Smart Calculator",
+    "_icon": "plus.forwardslash.minus"
+  },
+  "state": {"onClose": false},
+  "children": [
+    {
+      "id": "calc_tab_view",
+      "type": "tab",
+      "style": {
+        "tab": { "selectedTint": "#FF9F0A", "unselectedTint": "#8E8E93", "barBackground": "#1C1C1E" }
+      },
+      "children": [
+
+        {
+          "id": "tab_calculator",
+          "type": "module",
+          "context": {
+            "_tabTitle": "Calculator",
+            "_tabImage": "sf://plus.forwardslash.minus"
+          },
+          "state": {
+            "display": 0,
+            "storedValue": 0,
+            "currentOp": "",
+            "awaitingOperand": false,
+            "decimalFactor": 0
+          },
+          "dependencies": [
+            {
+              "action": {
+                "state": {
+                  "id": "calc_digit",
+                  "input": {
+                    "display": "{{ ${awaitingOperand} ? @{d} : (${decimalFactor} > 0 ? ${display} + @{d} * ${decimalFactor} : ${display} * 10 + @{d}) }}",
+                    "awaitingOperand": false,
+                    "decimalFactor": "{{ ${awaitingOperand} ? 0 : (${decimalFactor} > 0 ? ${decimalFactor} * 0.1 : 0) }}"
+                  }
+                }
+              }
+            },
+            {
+              "action": {
+                "state": {
+                  "id": "calc_op",
+                  "input": {
+                    "storedValue": "${display}",
+                    "currentOp": "@{op}",
+                    "awaitingOperand": true,
+                    "decimalFactor": 0
+                  }
+                }
+              }
+            },
+            {
+              "action": {
+                "state": {
+                  "id": "calc_clear",
+                  "input": {
+                    "display": 0,
+                    "storedValue": 0,
+                    "currentOp": "",
+                    "awaitingOperand": false,
+                    "decimalFactor": 0
+                  }
+                }
+              }
+            },
+            {
+              "action": {
+                "state": {
+                  "id": "calc_negate",
+                  "input": { "display": "{{ ${display} * -1 }}" }
+                }
+              }
+            },
+            {
+              "action": {
+                "state": {
+                  "id": "calc_percent",
+                  "input": { "display": "{{ ${display} / 100 }}" }
+                }
+              }
+            },
+            {
+              "action": {
+                "state": {
+                  "id": "calc_decimal",
+                  "input": {
+                    "decimalFactor": "{{ ${decimalFactor} > 0 ? ${decimalFactor} : 0.1 }}",
+                    "awaitingOperand": false
+                  }
+                }
+              }
+            },
+            {
+              "action": {
+                "state": {
+                  "id": "calc_equals",
+                  "input": {
+                    "display": "{{ ${currentOp} == '+' ? ${storedValue} + ${display} : (${currentOp} == '-' ? ${storedValue} - ${display} : (${currentOp} == '*' ? ${storedValue} * ${display} : (${currentOp} == '/' ? ${storedValue} / ${display} : ${display}))) }}",
+                    "storedValue": 0,
+                    "currentOp": "",
+                    "awaitingOperand": true,
+                    "decimalFactor": 0
+                  }
+                }
+              }
+            },
+            {
+              "component": {
+                "id": "dep_btn",
+                "type": "button",
+                "context": { "_label": "@{lbl}" },
+                "style": {
+                  "button": {
+                    "custom": {
+                      "layout": { "maxWidth": "infinity", "height": 72 },
+                      "common": {
+                        "foreground": { "color": "@{fg}" },
+                        "cornerRadius": 36,
+                        "background": { "color": "@{bg}" },
+                        "font": { "kind": "system", "size": "@{fs}" }
+                      }
+                    }
+                  }
+                },
+                "events": {
+                  "onTap": [
+                    { "template": { "id": "dep_btn_tap", "input": "@{act}" } }
+                  ]
+                }
+              }
+            }
+          ],
+          "children": [
+            {
+              "id": "calc_root",
+              "type": "vstack",
+              "context": { "_spacing": 0 },
+              "style": {
+                "layout": { "maxWidth": "infinity" },
+                "common": { "background": { "color": "#1C1C1E" } }
+              },
+              "children": [
+                {
+                  "id": "calc_close_row",
+                  "type": "hstack",
+                  "style": { "layout": { "maxWidth": "infinity", "padding": { "top": 12, "trailing": 16 } } },
+                  "children": [
+                    { "id": "calc_close_spacer", "type": "spacer" },
+                    {
+                      "id": "calc_close_btn",
+                      "type": "button",
+                      "style": { "button": { "custom": {
+                        "layout": { "width": 36, "height": 36 },
+                        "common": { "cornerRadius": 18, "background": { "light": "#EFEFEF", "dark": "#2C2C2E" } }
+                      } } },
+                      "children": [
+                        { "id": "calc_close_icon", "type": "image", "context": { "_source": "sf://xmark" },
+                          "style": { "layout": { "width": 12, "height": 12 },
+                                     "common": { "foreground": { "light": "#262626", "dark": "#FFFFFF" },
+                                                 "font": { "kind": "caption", "weight": "bold" } } } }
+                      ],
+                      "events": {
+                        "onTap": [{ "state": { "id": "calc_close_action", "input": { "onClose": true } } }]
+                      }
+                    }
+                  ]
+                },
+                { "id": "calc_grow", "type": "spacer" },
+                {
+                  "id": "calc_display_row",
+                  "type": "hstack",
+                  "context": { "_alignment": "bottom" },
+                  "style": {
+                    "layout": { "maxWidth": "infinity", "padding": { "horizontal": 24, "bottom": 12 } }
+                  },
+                  "children": [
+                    { "id": "calc_display_spacer", "type": "spacer" },
+                    {
+                      "id": "calc_display",
+                      "type": "text",
+                      "context": {
+                        "_text": "${display}",
+                        "_format": { "number": { "style": "number", "maximumFractionDigits": 9, "usesGroupingSeparator": true } }
+                      },
+                      "style": {
+                        "common": {
+                          "foreground": { "color": "#FFFFFF" },
+                          "font": { "kind": "system", "size": 64, "weight": "light" }
+                        },
+                        "text": { "lineLimit": 1, "minimumScaleFactor": 0.4 }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "calc_keys",
+                  "type": "vstack",
+                  "context": { "_spacing": 10 },
+                  "style": { "layout": { "maxWidth": "infinity", "padding": { "horizontal": 12, "bottom": 16 } } },
+                  "children": [
+                    {
+                      "id": "calc_row1",
+                      "type": "hstack",
+                      "context": { "_spacing": 10 },
+                      "style": { "layout": { "maxWidth": "infinity" } },
+                      "children": [
+                        { "id": "btn_ac", "type": "template", "context": { "_source": "dp://dep_btn", "lbl": "AC", "bg": "#A5A5A5", "fg": "#000000", "fs": 28, "act": "calc_clear" } },
+                        { "id": "btn_neg", "type": "template", "context": { "_source": "dp://dep_btn", "lbl": "+/−", "bg": "#A5A5A5", "fg": "#000000", "fs": 28, "act": "calc_negate" } },
+                        { "id": "btn_pct", "type": "template", "context": { "_source": "dp://dep_btn", "lbl": "%", "bg": "#A5A5A5", "fg": "#000000", "fs": 28, "act": "calc_percent" } },
+                        { "id": "btn_div", "type": "template", "context": { "_source": "dp://dep_btn", "lbl": "÷", "bg": "#FF9F0A", "fg": "#FFFFFF", "fs": 32, "op": "/", "act": "calc_op" } }
+                      ]
+                    },
+                    {
+                      "id": "calc_row2",
+                      "type": "hstack",
+                      "context": { "_spacing": 10 },
+                      "style": { "layout": { "maxWidth": "infinity" } },
+                      "children": [
+                        { "id": "btn_7", "type": "template", "context": { "_source": "dp://dep_btn", "_inline": true, "lbl": "7", "bg": "#333333", "fg": "#FFFFFF", "fs": 30, "d": 7, "act": "calc_digit" } },
+                        { "id": "btn_8", "type": "template", "context": { "_source": "dp://dep_btn", "_inline": true, "lbl": "8", "bg": "#333333", "fg": "#FFFFFF", "fs": 30, "d": 8, "act": "calc_digit" } },
+                        { "id": "btn_9", "type": "template", "context": { "_source": "dp://dep_btn", "_inline": true, "lbl": "9", "bg": "#333333", "fg": "#FFFFFF", "fs": 30, "d": 9, "act": "calc_digit" } },
+                        { "id": "btn_mul", "type": "template", "context": { "_source": "dp://dep_btn", "_inline": true, "lbl": "×", "bg": "#FF9F0A", "fg": "#FFFFFF", "fs": 32, "op": "*", "act": "calc_op" } }
+                      ]
+                    },
+                    {
+                      "id": "calc_row3",
+                      "type": "hstack",
+                      "context": { "_spacing": 10 },
+                      "style": { "layout": { "maxWidth": "infinity" } },
+                      "children": [
+                        { "id": "btn_4", "type": "template", "context": { "_source": "dp://dep_btn", "_inline": true, "lbl": "4", "bg": "#333333", "fg": "#FFFFFF", "fs": 30, "d": 4, "act": "calc_digit" } },
+                        { "id": "btn_5", "type": "template", "context": { "_source": "dp://dep_btn", "_inline": true, "lbl": "5", "bg": "#333333", "fg": "#FFFFFF", "fs": 30, "d": 5, "act": "calc_digit" } },
+                        { "id": "btn_6", "type": "template", "context": { "_source": "dp://dep_btn", "_inline": true, "lbl": "6", "bg": "#333333", "fg": "#FFFFFF", "fs": 30, "d": 6, "act": "calc_digit" } },
+                        { "id": "btn_sub", "type": "template", "context": { "_source": "dp://dep_btn", "_inline": true, "lbl": "−", "bg": "#FF9F0A", "fg": "#FFFFFF", "fs": 32, "op": "-", "act": "calc_op" } }
+                      ]
+                    },
+                    {
+                      "id": "calc_row4",
+                      "type": "hstack",
+                      "context": { "_spacing": 10 },
+                      "style": { "layout": { "maxWidth": "infinity" } },
+                      "children": [
+                        { "id": "btn_1", "type": "template", "context": { "_source": "dp://dep_btn", "_inline": true, "lbl": "1", "bg": "#333333", "fg": "#FFFFFF", "fs": 30, "d": 1, "act": "calc_digit" } },
+                        { "id": "btn_2", "type": "template", "context": { "_source": "dp://dep_btn", "_inline": true, "lbl": "2", "bg": "#333333", "fg": "#FFFFFF", "fs": 30, "d": 2, "act": "calc_digit" } },
+                        { "id": "btn_3", "type": "template", "context": { "_source": "dp://dep_btn", "_inline": true, "lbl": "3", "bg": "#333333", "fg": "#FFFFFF", "fs": 30, "d": 3, "act": "calc_digit" } },
+                        { "id": "btn_add", "type": "template", "context": { "_source": "dp://dep_btn", "_inline": true, "lbl": "+", "bg": "#FF9F0A", "fg": "#FFFFFF", "fs": 32, "op": "+", "act": "calc_op" } }
+                      ]
+                    },
+                    {
+                      "id": "calc_row5",
+                      "type": "hstack",
+                      "context": { "_spacing": 10 },
+                      "style": { "layout": { "maxWidth": "infinity" } },
+                      "children": [
+                        { "id": "btn_0", "type": "template", "context": { "_source": "dp://dep_btn", "_inline": true, "lbl": "0", "bg": "#333333", "fg": "#FFFFFF", "fs": 30, "d": 0, "act": "calc_digit" } },
+                        { "id": "btn_dot", "type": "template", "context": { "_source": "dp://dep_btn", "_inline": true, "lbl": ".", "bg": "#333333", "fg": "#FFFFFF", "fs": 30, "act": "calc_decimal" } },
+                        { "id": "btn_eq", "type": "template", "context": { "_source": "dp://dep_btn", "_inline": true, "lbl": "=", "bg": "#FF9F0A", "fg": "#FFFFFF", "fs": 32, "act": "calc_equals" } }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+
+        {
+          "id": "tab_tip",
+          "type": "module",
+          "context": {
+            "_tabTitle": "Tip",
+            "_tabImage": "sf://dollarsign.circle",
+            "tint": "#FF9F0A"
+          },
+          "state": {
+            "billAmount": 0,
+            "billText": "",
+            "tipPercent": 0.18,
+            "splitCount": "2"
+          },
+          "children": [
+            {
+              "id": "tip_root",
+              "type": "vstack",
+              "context": { "_spacing": 0 },
+              "style": {
+                "layout": { "maxWidth": "infinity", "maxHeight": "infinity" },
+                "common": {
+                  "background": { "gradient": { "linear": {
+                    "colors": ["#E65100", "#F57C00"],
+                    "startPoint": "topLeading",
+                    "endPoint": "bottomTrailing"
+                  }}}
+                }
+              },
+              "children": [
+                {
+                  "id": "tip_header",
+                  "type": "vstack",
+                  "context": { "_spacing": 4 },
+                  "style": { "layout": { "padding": { "top": 20, "horizontal": 24, "bottom": 12 } } },
+                  "children": [
+                    {
+                      "id": "tip_icon",
+                      "type": "image",
+                      "context": { "_source": "sf://dollarsign.circle.fill" },
+                      "style": {
+                        "layout": { "width": 32, "height": 32 },
+                        "common": { "foreground": { "color": { "color": "white", "opacity": 0.9 } } }
+                      }
+                    },
+                    {
+                      "id": "tip_title",
+                      "type": "text",
+                      "context": { "_text": "Tip Calculator" },
+                      "style": { "common": { "font": { "kind": "system", "size": 28, "weight": "bold", "design": "rounded" }, "foreground": { "color": "white" } } }
+                    },
+                    {
+                      "id": "tip_subtitle",
+                      "type": "text",
+                      "context": { "_text": "Split the bill with friends" },
+                      "style": { "common": { "font": "subheadline", "foreground": { "color": { "color": "white", "opacity": 0.7 } } } }
+                    }
+                  ]
+                },
+                {
+                  "id": "tip_body",
+                  "type": "scroll",
+                  "style": { "scroll": { "dismissesKeyboard": "immediately" } },
+                  "children": [
+                    {
+                      "id": "tip_cards",
+                      "type": "vstack",
+                      "context": { "_spacing": 16 },
+                      "style": { "layout": { "padding": { "horizontal": 20, "bottom": 24 } } },
+                      "children": [
+                        {
+                          "id": "tip_bill_card",
+                          "type": "vstack",
+                          "context": { "_spacing": 12 },
+                          "style": {
+                            "layout": { "maxWidth": "infinity", "padding": 20 },
+                            "common": {
+                              "background": { "color": { "color": "white", "opacity": 0.2 } },
+                              "cornerRadius": 20
+                            }
+                          },
+                          "children": [
+                            {
+                              "id": "tip_bill_label",
+                              "type": "text",
+                              "context": { "_text": "BILL AMOUNT" },
+                              "style": { "common": { "font": { "kind": "system", "size": 12, "weight": "semibold" }, "foreground": { "color": { "color": "white", "opacity": 0.6 } } } }
+                            },
+                            {
+                              "id": "tip_bill_input",
+                              "type": "textfield",
+                              "context": {
+                                "_label": "0.00",
+                                "_text": "${billText}",
+                                "_keyboard": "decimalPad"
+                              },
+                              "style": {
+                                "textField": { "standard": "roundedBorder" },
+                                "common": { "font": { "kind": "system", "size": 36, "weight": "bold", "design": "rounded" } }
+                              },
+                              "events": {
+                                "onChange": {
+                                  "observed": "billText",
+                                  "actions": [
+                                    {
+                                      "state": {
+                                        "id": "tip_parse_bill",
+                                        "input": { "billAmount": "{{ cast(${billText}, 'double') ?? 0 }}" }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "id": "tip_percent_card",
+                          "type": "vstack",
+                          "context": { "_spacing": 14 },
+                          "style": {
+                            "layout": { "maxWidth": "infinity", "padding": 20 },
+                            "common": {
+                              "background": { "color": { "color": "white", "opacity": 0.2 } },
+                              "cornerRadius": 20
+                            }
+                          },
+                          "children": [
+                            {
+                              "id": "tip_pct_header",
+                              "type": "hstack",
+                              "children": [
+                                {
+                                  "id": "tip_pct_label",
+                                  "type": "text",
+                                  "context": { "_text": "TIP" },
+                                  "style": { "common": { "font": { "kind": "system", "size": 12, "weight": "semibold" }, "foreground": { "color": { "color": "white", "opacity": 0.6 } } } }
+                                },
+                                { "id": "tip_pct_spacer", "type": "spacer" },
+                                {
+                                  "id": "tip_pct_value",
+                                  "type": "text",
+                                  "context": {
+                                    "_text": "{{ cast(${tipPercent} * 100, 'int') + '%' }}"
+                                  },
+                                  "style": { "common": { "font": { "kind": "system", "size": 24, "weight": "bold", "design": "rounded" }, "foreground": { "color": "white" } } }
+                                }
+                              ]
+                            },
+                            {
+                              "id": "tip_slider",
+                              "type": "slider",
+                              "context": {
+                                "_value": "${tipPercent}",
+                                "_min": 0,
+                                "_max": 0.30,
+                                "_step": 0.01
+                              },
+                              "style": { "common": { "tint": "white" } }
+                            },
+                            {
+                              "id": "tip_quick_picks",
+                              "type": "hstack",
+                              "context": { "_spacing": 10 },
+                              "style": { "layout": { "maxWidth": "infinity" } },
+                              "children": [
+                                {
+                                  "id": "tip_pick_15",
+                                  "type": "button",
+                                  "context": { "_label": "15%" },
+                                  "style": {
+                                    "button": { "custom": {
+                                      "layout": { "maxWidth": "infinity", "minHeight": 40 },
+                                      "common": { "background": { "color": { "color": "white", "opacity": 0.25 } }, "foreground": { "color": "white" }, "cornerRadius": 12, "font": { "kind": "system", "size": 15, "weight": "semibold" } }
+                                    }}
+                                  },
+                                  "events": { "onTap": [{ "state": { "id": "tip_set_15", "input": { "tipPercent": 0.15 } } }] }
+                                },
+                                {
+                                  "id": "tip_pick_18",
+                                  "type": "button",
+                                  "context": { "_label": "18%" },
+                                  "style": {
+                                    "button": { "custom": {
+                                      "layout": { "maxWidth": "infinity", "minHeight": 40 },
+                                      "common": { "background": { "color": { "color": "white", "opacity": 0.25 } }, "foreground": { "color": "white" }, "cornerRadius": 12, "font": { "kind": "system", "size": 15, "weight": "semibold" } }
+                                    }}
+                                  },
+                                  "events": { "onTap": [{ "state": { "id": "tip_set_18", "input": { "tipPercent": 0.18 } } }] }
+                                },
+                                {
+                                  "id": "tip_pick_20",
+                                  "type": "button",
+                                  "context": { "_label": "20%" },
+                                  "style": {
+                                    "button": { "custom": {
+                                      "layout": { "maxWidth": "infinity", "minHeight": 40 },
+                                      "common": { "background": { "color": { "color": "white", "opacity": 0.25 } }, "foreground": { "color": "white" }, "cornerRadius": 12, "font": { "kind": "system", "size": 15, "weight": "semibold" } }
+                                    }}
+                                  },
+                                  "events": { "onTap": [{ "state": { "id": "tip_set_20", "input": { "tipPercent": 0.20 } } }] }
+                                },
+                                {
+                                  "id": "tip_pick_25",
+                                  "type": "button",
+                                  "context": { "_label": "25%" },
+                                  "style": {
+                                    "button": { "custom": {
+                                      "layout": { "maxWidth": "infinity", "minHeight": 40 },
+                                      "common": { "background": { "color": { "color": "white", "opacity": 0.25 } }, "foreground": { "color": "white" }, "cornerRadius": 12, "font": { "kind": "system", "size": 15, "weight": "semibold" } }
+                                    }}
+                                  },
+                                  "events": { "onTap": [{ "state": { "id": "tip_set_25", "input": { "tipPercent": 0.25 } } }] }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "id": "tip_split_card",
+                          "type": "vstack",
+                          "context": { "_spacing": 10 },
+                          "style": {
+                            "layout": { "maxWidth": "infinity", "padding": 20 },
+                            "common": {
+                              "background": { "color": { "color": "white", "opacity": 0.2 } },
+                              "cornerRadius": 20
+                            }
+                          },
+                          "children": [
+                            {
+                              "id": "tip_split_label",
+                              "type": "text",
+                              "context": { "_text": "SPLIT BETWEEN" },
+                              "style": { "common": { "font": { "kind": "system", "size": 12, "weight": "semibold" }, "foreground": { "color": { "color": "white", "opacity": 0.6 } } } }
+                            },
+                            {
+                              "id": "tip_split_picker",
+                              "type": "picker",
+                              "context": {
+                                "_label": "Split",
+                                "_selection": "${splitCount}",
+                                "_options": ["1", "2", "3", "4", "5", "6"]
+                              },
+                              "style": { "picker": "segmented", "layout": { "maxWidth": "infinity" } }
+                            }
+                          ]
+                        },
+                        {
+                          "id": "tip_results_card",
+                          "type": "vstack",
+                          "context": { "_spacing": 16 },
+                          "style": {
+                            "layout": { "maxWidth": "infinity", "padding": 24 },
+                            "common": {
+                              "background": { "color": { "color": "white", "opacity": 0.25 } },
+                              "cornerRadius": 20
+                            },
+                            "shadow": { "color": { "color": "black", "opacity": 0.1 }, "radius": 12, "x": 0, "y": 6 }
+                          },
+                          "children": [
+                            {
+                              "id": "tip_result_tip_row",
+                              "type": "hstack",
+                              "children": [
+                                {
+                                  "id": "tip_lbl_tip",
+                                  "type": "text",
+                                  "context": { "_text": "Tip" },
+                                  "style": { "common": { "font": "body", "foreground": { "color": { "color": "white", "opacity": 0.8 } } } }
+                                },
+                                { "id": "tip_sp1", "type": "spacer" },
+                                {
+                                  "id": "tip_val_tip",
+                                  "type": "text",
+                                  "context": {
+                                    "_text": "{{ ${billAmount} * ${tipPercent} }}",
+                                    "_format": { "number": { "style": "currency", "currencyCode": "USD" } }
+                                  },
+                                  "style": { "common": { "font": { "kind": "system", "size": 18, "weight": "semibold", "design": "rounded" }, "foreground": { "color": "white" } } }
+                                }
+                              ]
+                            },
+                            {
+                              "id": "tip_result_total_row",
+                              "type": "hstack",
+                              "children": [
+                                {
+                                  "id": "tip_lbl_total",
+                                  "type": "text",
+                                  "context": { "_text": "Total" },
+                                  "style": { "common": { "font": "body", "foreground": { "color": { "color": "white", "opacity": 0.8 } } } }
+                                },
+                                { "id": "tip_sp2", "type": "spacer" },
+                                {
+                                  "id": "tip_val_total",
+                                  "type": "text",
+                                  "context": {
+                                    "_text": "{{ ${billAmount} + ${billAmount} * ${tipPercent} }}",
+                                    "_format": { "number": { "style": "currency", "currencyCode": "USD" } }
+                                  },
+                                  "style": { "common": { "font": { "kind": "system", "size": 18, "weight": "semibold", "design": "rounded" }, "foreground": { "color": "white" } } }
+                                }
+                              ]
+                            },
+                            {
+                              "id": "tip_result_divider",
+                              "type": "divider"
+                            },
+                            {
+                              "id": "tip_each_label",
+                              "type": "text",
+                              "context": { "_text": "{{ 'Each person pays' }}" },
+                              "style": { "common": { "font": "caption", "foreground": { "color": { "color": "white", "opacity": 0.5 } } } }
+                            },
+                            {
+                              "id": "tip_val_each",
+                              "type": "text",
+                              "context": {
+                                "_text": "{{ (${billAmount} + ${billAmount} * ${tipPercent}) / (cast(${splitCount}, 'double') ?? 1) }}",
+                                "_format": { "number": { "style": "currency", "currencyCode": "USD" } }
+                              },
+                              "style": {
+                                "common": { "font": { "kind": "system", "size": 48, "weight": "bold", "design": "rounded" }, "foreground": { "color": "white" } },
+                                "animation": { "kind": "easeInOut", "value": "${billAmount}", "duration": 0.3 }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+
+        {
+          "id": "tab_converter",
+          "type": "module",
+          "context": {
+            "_tabTitle": "Convert",
+            "_tabImage": "sf://arrow.left.arrow.right"
+          },
+          "state": {
+            "inputText": "",
+            "inputValue": 0,
+            "category": "Temperature",
+            "fromUnit": "Celsius",
+            "toUnit": "Fahrenheit",
+            "swapped": false
+          },
+          "children": [
+            {
+              "id": "conv_root",
+              "type": "vstack",
+              "context": { "_spacing": 0 },
+              "style": {
+                "layout": { "maxWidth": "infinity", "maxHeight": "infinity" },
+                "common": {
+                  "background": { "gradient": { "linear": {
+                    "colors": ["#667eea", "#764ba2"],
+                    "startPoint": "topLeading",
+                    "endPoint": "bottomTrailing"
+                  }}}
+                }
+              },
+              "children": [
+                {
+                  "id": "conv_header",
+                  "type": "vstack",
+                  "context": { "_spacing": 4 },
+                  "style": { "layout": { "padding": { "top": 20, "horizontal": 24, "bottom": 12 } } },
+                  "children": [
+                    {
+                      "id": "conv_icon",
+                      "type": "image",
+                      "context": { "_source": "sf://thermometer.medium" },
+                      "style": {
+                        "layout": { "width": 32, "height": 32 },
+                        "common": { "foreground": { "color": { "color": "white", "opacity": 0.9 } } }
+                      }
+                    },
+                    {
+                      "id": "conv_title",
+                      "type": "text",
+                      "context": { "_text": "Temperature" },
+                      "style": { "common": { "font": { "kind": "system", "size": 28, "weight": "bold", "design": "rounded" }, "foreground": { "color": "white" } } }
+                    },
+                    {
+                      "id": "conv_subtitle",
+                      "type": "text",
+                      "context": { "_text": "Celsius · Fahrenheit · Kelvin" },
+                      "style": { "common": { "font": "subheadline", "foreground": { "color": { "color": "white", "opacity": 0.7 } } } }
+                    }
+                  ]
+                },
+                {
+                  "id": "conv_body",
+                  "type": "scroll",
+                  "style": { "scroll": { "dismissesKeyboard": "immediately" } },
+                  "children": [
+                    {
+                      "id": "conv_cards",
+                      "type": "vstack",
+                      "context": { "_spacing": 16 },
+                      "style": { "layout": { "padding": { "horizontal": 20, "bottom": 24 } } },
+                      "children": [
+                        {
+                          "id": "conv_from_card",
+                          "type": "vstack",
+                          "context": { "_spacing": 12 },
+                          "style": {
+                            "layout": { "maxWidth": "infinity", "padding": 20 },
+                            "common": {
+                              "background": { "color": { "color": "white", "opacity": 0.15 } },
+                              "cornerRadius": 20
+                            }
+                          },
+                          "children": [
+                            {
+                              "id": "conv_from_header",
+                              "type": "hstack",
+                              "children": [
+                                {
+                                  "id": "conv_from_label",
+                                  "type": "text",
+                                  "context": { "_text": "FROM" },
+                                  "style": { "common": { "font": { "kind": "system", "size": 12, "weight": "semibold" }, "foreground": { "color": { "color": "white", "opacity": 0.6 } } } }
+                                },
+                                { "id": "conv_from_sp", "type": "spacer" },
+                                {
+                                  "id": "conv_from_picker",
+                                  "type": "picker",
+                                  "context": {
+                                    "_label": "From",
+                                    "_selection": "${fromUnit}"
+                                  },
+                                  "style": { "picker": "menu", "common": { "tint": "white" } },
+                                  "children": [
+                                    { "id": "from_c", "type": "text", "context": { "_text": "°C  Celsius", "_value": "Celsius" } },
+                                    { "id": "from_f", "type": "text", "context": { "_text": "°F  Fahrenheit", "_value": "Fahrenheit" } },
+                                    { "id": "from_k", "type": "text", "context": { "_text": "K   Kelvin", "_value": "Kelvin" } }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "id": "conv_input_field",
+                              "type": "textfield",
+                              "context": {
+                                "_label": "Enter temperature",
+                                "_text": "${inputText}",
+                                "_keyboard": "decimalPad"
+                              },
+                              "style": {
+                                "textField": { "standard": "roundedBorder" },
+                                "common": { "font": { "kind": "system", "size": 36, "weight": "bold", "design": "rounded" } }
+                              },
+                              "events": {
+                                "onChange": {
+                                  "observed": "inputText",
+                                  "actions": [
+                                    {
+                                      "state": {
+                                        "id": "conv_parse_input",
+                                        "input": { "inputValue": "{{ cast(${inputText}, 'double') ?? 0 }}" }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "id": "conv_from_unit_label",
+                              "type": "text",
+                              "context": { "_text": "{{ ${fromUnit} == 'Celsius' ? 'degrees Celsius' : (${fromUnit} == 'Fahrenheit' ? 'degrees Fahrenheit' : 'Kelvin') }}" },
+                              "style": { "common": { "font": "caption", "foreground": { "color": { "color": "white", "opacity": 0.5 } } } }
+                            }
+                          ]
+                        },
+                        {
+                          "id": "conv_swap_btn",
+                          "type": "button",
+                          "context": { "_label": "" },
+                          "style": {
+                            "button": {
+                              "custom": {
+                                "layout": { "width": 48, "height": 48 },
+                                "common": {
+                                  "background": { "color": { "color": "white", "opacity": 0.25 } },
+                                  "cornerRadius": 24,
+                                  "foreground": { "color": "white" }
+                                }
+                              }
+                            }
+                          },
+                          "children": [
+                            {
+                              "id": "conv_swap_icon",
+                              "type": "image",
+                              "context": { "_source": "sf://arrow.up.arrow.down" },
+                              "style": { "layout": { "width": 20, "height": 20 }, "common": { "foreground": { "color": "white" } } }
+                            }
+                          ],
+                          "events": {
+                            "onTap": [
+                              {
+                                "state": {
+                                  "id": "conv_do_swap",
+                                  "input": {
+                                    "fromUnit": "${toUnit}",
+                                    "toUnit": "${fromUnit}",
+                                    "swapped": "{{ !${swapped} }}"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "id": "conv_result_card",
+                          "type": "vstack",
+                          "context": { "_spacing": 12 },
+                          "style": {
+                            "layout": { "maxWidth": "infinity", "padding": 24 },
+                            "common": {
+                              "background": { "color": { "color": "white", "opacity": 0.2 } },
+                              "cornerRadius": 20
+                            },
+                            "shadow": { "color": { "color": "black", "opacity": 0.15 }, "radius": 12, "x": 0, "y": 6 }
+                          },
+                          "children": [
+                            {
+                              "id": "conv_to_header",
+                              "type": "hstack",
+                              "children": [
+                                {
+                                  "id": "conv_to_label",
+                                  "type": "text",
+                                  "context": { "_text": "TO" },
+                                  "style": { "common": { "font": { "kind": "system", "size": 12, "weight": "semibold" }, "foreground": { "color": { "color": "white", "opacity": 0.6 } } } }
+                                },
+                                { "id": "conv_to_sp", "type": "spacer" },
+                                {
+                                  "id": "conv_to_picker",
+                                  "type": "picker",
+                                  "context": {
+                                    "_label": "To",
+                                    "_selection": "${toUnit}"
+                                  },
+                                  "style": { "picker": "menu", "common": { "tint": "white" } },
+                                  "children": [
+                                    { "id": "to_c", "type": "text", "context": { "_text": "°C  Celsius", "_value": "Celsius" } },
+                                    { "id": "to_f", "type": "text", "context": { "_text": "°F  Fahrenheit", "_value": "Fahrenheit" } },
+                                    { "id": "to_k", "type": "text", "context": { "_text": "K   Kelvin", "_value": "Kelvin" } }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "id": "conv_result_value",
+                              "type": "text",
+                              "context": {
+                                "_text": "{{ ${fromUnit} == ${toUnit} ? ${inputValue} : (${fromUnit} == 'Celsius' ? (${toUnit} == 'Fahrenheit' ? ${inputValue} * 9 / 5 + 32 : ${inputValue} + 273.15) : (${fromUnit} == 'Fahrenheit' ? (${toUnit} == 'Celsius' ? (${inputValue} - 32) * 5 / 9 : (${inputValue} - 32) * 5 / 9 + 273.15) : (${toUnit} == 'Celsius' ? ${inputValue} - 273.15 : (${inputValue} - 273.15) * 9 / 5 + 32))) }}",
+                                "_format": { "number": { "style": "number", "maximumFractionDigits": 2 } }
+                              },
+                              "style": {
+                                "common": { "font": { "kind": "system", "size": 48, "weight": "bold", "design": "rounded" }, "foreground": { "color": "white" } },
+                                "animation": { "kind": "easeInOut", "value": "${inputValue}", "duration": 0.3 }
+                              }
+                            },
+                            {
+                              "id": "conv_to_unit_label",
+                              "type": "text",
+                              "context": { "_text": "{{ ${toUnit} == 'Celsius' ? 'degrees Celsius' : (${toUnit} == 'Fahrenheit' ? 'degrees Fahrenheit' : 'Kelvin') }}" },
+                              "style": { "common": { "font": "subheadline", "foreground": { "color": { "color": "white", "opacity": 0.6 } } } }
+                            }
+                          ]
+                        },
+                        {
+                          "id": "conv_formula",
+                          "type": "text",
+                          "context": { "_text": "{{ ${fromUnit} == ${toUnit} ? 'Same unit' : (${fromUnit} == 'Celsius' ? (${toUnit} == 'Fahrenheit' ? '°F = °C × 9/5 + 32' : 'K = °C + 273.15') : (${fromUnit} == 'Fahrenheit' ? (${toUnit} == 'Celsius' ? '°C = (°F − 32) × 5/9' : 'K = (°F − 32) × 5/9 + 273.15') : (${toUnit} == 'Celsius' ? '°C = K − 273.15' : '°F = (K − 273.15) × 9/5 + 32'))) }}" },
+                          "style": {
+                            "common": { "font": { "kind": "system", "size": 13, "design": "monospaced" }, "foreground": { "color": { "color": "white", "opacity": 0.4 } } },
+                            "text": { "multilineTextAlignment": "center" }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: StemRuntimeSDK bugs or feature requests
+    url: https://github.com/vkrychun/stem-runtime-kotlin/issues
+    about: Anything about how the SDK works — file at the runtime repository, not here.
+  - name: StemJSON specification questions or proposals
+    url: https://github.com/vkrychun/StemJSON/issues
+    about: Spec clarifications and v1.1 proposals belong in the specification repository.
+  - name: How-to questions
+    url: https://github.com/vkrychun/stem-runtime-kotlin/discussions/categories/q-a
+    about: Use the SDK repo's Discussions → Q&A for integration questions.

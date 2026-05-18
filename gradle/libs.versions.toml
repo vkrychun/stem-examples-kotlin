@@ -1,0 +1,43 @@
+[versions]
+kotlin = "2.1.0"
+agp = "8.13.2"
+android-compile-sdk = "35"
+android-min-sdk = "24"
+android-target-sdk = "35"
+
+compose-bom = "2024.12.01"
+activity-compose = "1.9.3"
+core-ktx = "1.15.0"
+
+# Required when consuming stem-runtime-sdk — it uses java.time on
+# minSdk 24 and the AAR's metadata flags this requirement.
+desugar-jdk-libs = "2.1.4"
+
+# Pin the runtime AAR version. Bumps here are the only change a release
+# review needs to verify — the dependency graph (transitive Compose / Coil /
+# Media3) is delivered by the published POM and Module Metadata.
+stem-runtime = "1.0.0"
+
+# LeakCanary — auto-detects retained Activity / Fragment / ViewModel
+# instances ~5 s after destruction in debug builds, dumps the GC-root
+# chain to logcat. Zero-config; only loads when the build type is
+# debuggable.
+leakcanary = "2.14"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
+
+stem-runtime-sdk = { group = "com.stemjson", name = "stem-runtime-sdk", version.ref = "stem-runtime" }
+desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
+leakcanary-android = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanary" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

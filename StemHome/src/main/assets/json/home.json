@@ -1,0 +1,216 @@
+{
+  "id": "mod_home",
+  "type": "module",
+  "version": "1.0",
+  "context": { "_title": "Rooms", "_icon": "square.grid.2x2.fill" },
+  "state": {
+    "devices": [
+      { "id": "d1", "name": "Ceiling Light",   "room": "Living Room", "kind": "light",      "icon": "lightbulb.fill",    "on": true  },
+      { "id": "d2", "name": "Floor Lamp",      "room": "Living Room", "kind": "light",      "icon": "lamp.floor.fill",   "on": false },
+      { "id": "d3", "name": "TV",              "room": "Living Room", "kind": "media",      "icon": "tv.fill",           "on": false },
+      { "id": "d4", "name": "Thermostat",      "room": "Living Room", "kind": "thermostat", "icon": "thermometer.medium","on": true  },
+      { "id": "d5", "name": "Fridge",          "room": "Kitchen",     "kind": "appliance",  "icon": "refrigerator.fill", "on": true  },
+      { "id": "d6", "name": "Coffee Maker",    "room": "Kitchen",     "kind": "appliance",  "icon": "mug.fill",          "on": false },
+      { "id": "d7", "name": "Bed Lamp",        "room": "Bedroom",     "kind": "light",      "icon": "lamp.desk.fill",    "on": false },
+      { "id": "d8", "name": "Smart Speaker",   "room": "Bedroom",     "kind": "media",      "icon": "hifispeaker.fill",  "on": false },
+      { "id": "d9", "name": "Porch Light",     "room": "Outdoor",     "kind": "light",      "icon": "light.ribbon",      "on": true  },
+      { "id": "d10","name": "Garden Sprinkler","room": "Outdoor",     "kind": "appliance",  "icon": "drop.fill",         "on": false }
+    ],
+    "recentEvents": [],
+    "activeCount": 4,
+    "targetId":    "",
+    "targetName":  "",
+    "targetOn":    false,
+    "targetTime":  0,
+    "onClose":     false
+  },
+  "events": {
+    "onCustom": {
+      "name": "deviceToggled",
+      "actions": [
+        { "state": {
+            "id": "act_apply",
+            "input": {
+              "devices": "{{ map(${devices}, { 'id': @{item.id}, 'name': @{item.name}, 'room': @{item.room}, 'kind': @{item.kind}, 'icon': @{item.icon}, 'on': @{item.id} == @{act_apply.id} ? @{act_apply.on} : @{item.on} }) }}",
+              "activeCount": "{{ sum(map(${devices}, @{item.id} == @{act_apply.id} ? (@{act_apply.on} ? 1 : 0) : (@{item.on} ? 1 : 0))) }}",
+              "recentEvents": "{{ [ { 'id': cast(@{act_apply.timestamp}, 'string'), 'deviceName': @{act_apply.name}, 'action': @{act_apply.on} ? 'on' : 'off', 'timestamp': @{act_apply.timestamp} } ] + ${recentEvents} }}"
+            }
+        } }
+      ]
+    }
+  },
+  "children": [
+    {
+      "id": "home_nav",
+      "type": "navigation",
+      "style": { "navigation": { "navigationTitle": "Rooms", "navigationBarTitleDisplayMode": "large" } },
+      "children": [
+        {
+          "id": "home_scroll",
+          "type": "scroll",
+          "style": { "layout": { "maxWidth": "infinity", "maxHeight": "infinity" } },
+          "children": [
+            {
+              "id": "home_vstack",
+              "type": "vstack",
+              "context": { "_spacing": 16, "_alignment": "leading" },
+              "style": { "layout": { "maxWidth": "infinity", "padding": { "horizontal": 16, "vertical": 16 } } },
+              "children": [
+
+                {
+                  "id": "about_card",
+                  "type": "vstack",
+                  "context": { "_spacing": 4, "_alignment": "leading" },
+                  "style": {
+                    "layout": { "maxWidth": "infinity", "padding": 14 },
+                    "common": { "cornerRadius": 14, "background": { "light": "#EDF4FF", "dark": "#12253F" } }
+                  },
+                  "children": [
+                    { "id": "about_title", "type": "text",
+                      "context": { "_text": "About this demo" },
+                      "style": { "common": { "font": { "kind": "headline" },
+                                              "foreground": { "light": "#003C80", "dark": "#7FBBFF" } } } },
+                    { "id": "about_body", "type": "text",
+                      "context": { "_text": "StemHome splits a smart-home UI across native SwiftUI and a StemJSON module sharing one runtime. Native Home tab owns instant toggles with haptics; this module owns the room/device catalog. Toggle anywhere — both sides stay in sync via runtime.trigger / runtime.subscribe. Activity tab shows the event log." },
+                      "style": { "layout": { "maxWidth": "infinity" },
+                                 "common": { "font": "footnote",
+                                              "foreground": { "light": "#003C80", "dark": "#BDDAFF" } },
+                                 "text":   { "lineSpacing": 2 } } }
+                  ]
+                },
+
+                {
+                  "id": "summary_card",
+                  "type": "hstack",
+                  "context": { "_spacing": 14, "_alignment": "center" },
+                  "style": {
+                    "layout": { "maxWidth": "infinity", "padding": 16 },
+                    "common": { "cornerRadius": 16, "background": { "light": "#F2F2F7", "dark": "#1C1C1E" } }
+                  },
+                  "children": [
+                    { "id": "summary_icon", "type": "image",
+                      "context": { "_source": "sf://bolt.fill" },
+                      "style": { "layout": { "width": 36, "height": 36 },
+                                 "common": { "foreground": "#FFB020" } } },
+                    {
+                      "id": "summary_text",
+                      "type": "vstack",
+                      "context": { "_spacing": 2, "_alignment": "leading" },
+                      "style": { "layout": { "maxWidth": "infinity" } },
+                      "children": [
+                        { "id": "summary_count", "type": "text",
+                          "context": { "_text": "{{ cast(${activeCount}, 'string') + ' of ' + cast(count(${devices}), 'string') + ' devices on' }}" },
+                          "style": { "common": { "font": { "kind": "headline" } } } },
+                        { "id": "summary_hint", "type": "text",
+                          "context": { "_text": "Tap any device to toggle it" },
+                          "style": { "common": { "font": "footnote",
+                                                  "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } }
+                      ]
+                    }
+                  ]
+                },
+
+                { "id": "s1_title", "type": "hstack", "context": { "_spacing": 10, "_alignment": "center" }, "style": { "layout": { "maxWidth": "infinity" } },
+                  "children": [
+                    { "id": "s1_icon", "type": "image", "context": { "_source": "sf://sofa.fill" }, "style": { "layout": { "width": 22, "height": 22 }, "common": { "foreground": "#007AFF" } } },
+                    { "id": "s1_name", "type": "text", "context": { "_text": "Living Room" }, "style": { "common": { "font": { "kind": "title3", "weight": "bold" } } } },
+                    { "id": "s1_sp", "type": "spacer" }
+                  ] },
+                { "id": "s1_list", "type": "dynamic",
+                  "context": { "_data": "${devices[room ~ 'Living Room']}", "_spacing": 8 },
+                  "prototype": {
+                    "id": "dr1", "type": "hstack", "context": { "_spacing": 12, "_alignment": "center" },
+                    "style": { "layout": { "maxWidth": "infinity", "padding": 14 }, "common": { "cornerRadius": 14, "background": { "light": "#FFFFFF", "dark": "#2C2C2E" } } },
+                    "children": [
+                      { "id": "dr1_ic", "type": "image", "context": { "_source": "{{ 'sf://' + @{item.icon} }}" }, "style": { "layout": { "width": 28, "height": 28 }, "common": { "foreground": "{{ @{item.on} ? '#34C759' : '#8E8E93' }}" } } },
+                      { "id": "dr1_info", "type": "vstack", "context": { "_spacing": 2, "_alignment": "leading" }, "style": { "layout": { "maxWidth": "infinity" } },
+                        "children": [
+                          { "id": "dr1_nm", "type": "text", "context": { "_text": "@{item.name}" }, "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+                          { "id": "dr1_mt", "type": "text", "context": { "_text": "{{ @{item.kind} + ' · ' + (@{item.on} ? 'On' : 'Off') }}" }, "style": { "common": { "font": "caption", "foreground": "#8E8E93" } } }
+                        ] },
+                      { "id": "dr1_sp", "type": "spacer" },
+                      { "id": "dr1_btn", "type": "button", "context": { "_label": "{{ @{item.on} ? 'Off' : 'On' }}" },
+                        "style": { "button": { "custom": { "layout": { "minHeight": 32, "minWidth": 56, "padding": { "horizontal": 12 } }, "common": { "cornerRadius": 16, "foreground": "white", "background": "{{ @{item.on} ? '#FF3B30' : '#34C759' }}", "font": { "kind": "footnote", "weight": "semibold" } } } } },
+                        "events": { "onTap": [{ "state": { "id": "c1", "input": { "targetId": "@{item.id}", "targetName": "@{item.name}", "targetOn": "{{ @{item.on} ? false : true }}", "targetTime": "{{ cast(#{now}, 'double') }}" }, "output": { "success": [{ "state": { "id": "a1", "input": { "devices": "{{ map(${devices}, { 'id': @{item.id}, 'name': @{item.name}, 'room': @{item.room}, 'kind': @{item.kind}, 'icon': @{item.icon}, 'on': @{item.id} == ${targetId} ? ${targetOn} : @{item.on} }) }}", "activeCount": "{{ sum(map(${devices}, @{item.id} == ${targetId} ? (${targetOn} ? 1 : 0) : (@{item.on} ? 1 : 0))) }}", "recentEvents": "{{ [ { 'id': cast(${targetTime}, 'string'), 'deviceName': ${targetName}, 'action': ${targetOn} ? 'on' : 'off', 'timestamp': ${targetTime} } ] + ${recentEvents} }}" } } }] } } }] } }
+                    ] } },
+
+                { "id": "s2_title", "type": "hstack", "context": { "_spacing": 10, "_alignment": "center" }, "style": { "layout": { "maxWidth": "infinity", "padding": { "top": 8 } } },
+                  "children": [
+                    { "id": "s2_icon", "type": "image", "context": { "_source": "sf://fork.knife" }, "style": { "layout": { "width": 22, "height": 22 }, "common": { "foreground": "#007AFF" } } },
+                    { "id": "s2_name", "type": "text", "context": { "_text": "Kitchen" }, "style": { "common": { "font": { "kind": "title3", "weight": "bold" } } } },
+                    { "id": "s2_sp", "type": "spacer" }
+                  ] },
+                { "id": "s2_list", "type": "dynamic",
+                  "context": { "_data": "${devices[room ~ 'Kitchen']}", "_spacing": 8 },
+                  "prototype": {
+                    "id": "dr2", "type": "hstack", "context": { "_spacing": 12, "_alignment": "center" },
+                    "style": { "layout": { "maxWidth": "infinity", "padding": 14 }, "common": { "cornerRadius": 14, "background": { "light": "#FFFFFF", "dark": "#2C2C2E" } } },
+                    "children": [
+                      { "id": "dr2_ic", "type": "image", "context": { "_source": "{{ 'sf://' + @{item.icon} }}" }, "style": { "layout": { "width": 28, "height": 28 }, "common": { "foreground": "{{ @{item.on} ? '#34C759' : '#8E8E93' }}" } } },
+                      { "id": "dr2_info", "type": "vstack", "context": { "_spacing": 2, "_alignment": "leading" }, "style": { "layout": { "maxWidth": "infinity" } },
+                        "children": [
+                          { "id": "dr2_nm", "type": "text", "context": { "_text": "@{item.name}" }, "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+                          { "id": "dr2_mt", "type": "text", "context": { "_text": "{{ @{item.kind} + ' · ' + (@{item.on} ? 'On' : 'Off') }}" }, "style": { "common": { "font": "caption", "foreground": "#8E8E93" } } }
+                        ] },
+                      { "id": "dr2_sp", "type": "spacer" },
+                      { "id": "dr2_btn", "type": "button", "context": { "_label": "{{ @{item.on} ? 'Off' : 'On' }}" },
+                        "style": { "button": { "custom": { "layout": { "minHeight": 32, "minWidth": 56, "padding": { "horizontal": 12 } }, "common": { "cornerRadius": 16, "foreground": "white", "background": "{{ @{item.on} ? '#FF3B30' : '#34C759' }}", "font": { "kind": "footnote", "weight": "semibold" } } } } },
+                        "events": { "onTap": [{ "state": { "id": "c2", "input": { "targetId": "@{item.id}", "targetName": "@{item.name}", "targetOn": "{{ @{item.on} ? false : true }}", "targetTime": "{{ cast(#{now}, 'double') }}" }, "output": { "success": [{ "state": { "id": "a2", "input": { "devices": "{{ map(${devices}, { 'id': @{item.id}, 'name': @{item.name}, 'room': @{item.room}, 'kind': @{item.kind}, 'icon': @{item.icon}, 'on': @{item.id} == ${targetId} ? ${targetOn} : @{item.on} }) }}", "activeCount": "{{ sum(map(${devices}, @{item.id} == ${targetId} ? (${targetOn} ? 1 : 0) : (@{item.on} ? 1 : 0))) }}", "recentEvents": "{{ [ { 'id': cast(${targetTime}, 'string'), 'deviceName': ${targetName}, 'action': ${targetOn} ? 'on' : 'off', 'timestamp': ${targetTime} } ] + ${recentEvents} }}" } } }] } } }] } }
+                    ] } },
+
+                { "id": "s3_title", "type": "hstack", "context": { "_spacing": 10, "_alignment": "center" }, "style": { "layout": { "maxWidth": "infinity", "padding": { "top": 8 } } },
+                  "children": [
+                    { "id": "s3_icon", "type": "image", "context": { "_source": "sf://bed.double.fill" }, "style": { "layout": { "width": 22, "height": 22 }, "common": { "foreground": "#007AFF" } } },
+                    { "id": "s3_name", "type": "text", "context": { "_text": "Bedroom" }, "style": { "common": { "font": { "kind": "title3", "weight": "bold" } } } },
+                    { "id": "s3_sp", "type": "spacer" }
+                  ] },
+                { "id": "s3_list", "type": "dynamic",
+                  "context": { "_data": "${devices[room ~ 'Bedroom']}", "_spacing": 8 },
+                  "prototype": {
+                    "id": "dr3", "type": "hstack", "context": { "_spacing": 12, "_alignment": "center" },
+                    "style": { "layout": { "maxWidth": "infinity", "padding": 14 }, "common": { "cornerRadius": 14, "background": { "light": "#FFFFFF", "dark": "#2C2C2E" } } },
+                    "children": [
+                      { "id": "dr3_ic", "type": "image", "context": { "_source": "{{ 'sf://' + @{item.icon} }}" }, "style": { "layout": { "width": 28, "height": 28 }, "common": { "foreground": "{{ @{item.on} ? '#34C759' : '#8E8E93' }}" } } },
+                      { "id": "dr3_info", "type": "vstack", "context": { "_spacing": 2, "_alignment": "leading" }, "style": { "layout": { "maxWidth": "infinity" } },
+                        "children": [
+                          { "id": "dr3_nm", "type": "text", "context": { "_text": "@{item.name}" }, "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+                          { "id": "dr3_mt", "type": "text", "context": { "_text": "{{ @{item.kind} + ' · ' + (@{item.on} ? 'On' : 'Off') }}" }, "style": { "common": { "font": "caption", "foreground": "#8E8E93" } } }
+                        ] },
+                      { "id": "dr3_sp", "type": "spacer" },
+                      { "id": "dr3_btn", "type": "button", "context": { "_label": "{{ @{item.on} ? 'Off' : 'On' }}" },
+                        "style": { "button": { "custom": { "layout": { "minHeight": 32, "minWidth": 56, "padding": { "horizontal": 12 } }, "common": { "cornerRadius": 16, "foreground": "white", "background": "{{ @{item.on} ? '#FF3B30' : '#34C759' }}", "font": { "kind": "footnote", "weight": "semibold" } } } } },
+                        "events": { "onTap": [{ "state": { "id": "c3", "input": { "targetId": "@{item.id}", "targetName": "@{item.name}", "targetOn": "{{ @{item.on} ? false : true }}", "targetTime": "{{ cast(#{now}, 'double') }}" }, "output": { "success": [{ "state": { "id": "a3", "input": { "devices": "{{ map(${devices}, { 'id': @{item.id}, 'name': @{item.name}, 'room': @{item.room}, 'kind': @{item.kind}, 'icon': @{item.icon}, 'on': @{item.id} == ${targetId} ? ${targetOn} : @{item.on} }) }}", "activeCount": "{{ sum(map(${devices}, @{item.id} == ${targetId} ? (${targetOn} ? 1 : 0) : (@{item.on} ? 1 : 0))) }}", "recentEvents": "{{ [ { 'id': cast(${targetTime}, 'string'), 'deviceName': ${targetName}, 'action': ${targetOn} ? 'on' : 'off', 'timestamp': ${targetTime} } ] + ${recentEvents} }}" } } }] } } }] } }
+                    ] } },
+
+                { "id": "s4_title", "type": "hstack", "context": { "_spacing": 10, "_alignment": "center" }, "style": { "layout": { "maxWidth": "infinity", "padding": { "top": 8 } } },
+                  "children": [
+                    { "id": "s4_icon", "type": "image", "context": { "_source": "sf://tree.fill" }, "style": { "layout": { "width": 22, "height": 22 }, "common": { "foreground": "#007AFF" } } },
+                    { "id": "s4_name", "type": "text", "context": { "_text": "Outdoor" }, "style": { "common": { "font": { "kind": "title3", "weight": "bold" } } } },
+                    { "id": "s4_sp", "type": "spacer" }
+                  ] },
+                { "id": "s4_list", "type": "dynamic",
+                  "context": { "_data": "${devices[room ~ 'Outdoor']}", "_spacing": 8 },
+                  "prototype": {
+                    "id": "dr4", "type": "hstack", "context": { "_spacing": 12, "_alignment": "center" },
+                    "style": { "layout": { "maxWidth": "infinity", "padding": 14 }, "common": { "cornerRadius": 14, "background": { "light": "#FFFFFF", "dark": "#2C2C2E" } } },
+                    "children": [
+                      { "id": "dr4_ic", "type": "image", "context": { "_source": "{{ 'sf://' + @{item.icon} }}" }, "style": { "layout": { "width": 28, "height": 28 }, "common": { "foreground": "{{ @{item.on} ? '#34C759' : '#8E8E93' }}" } } },
+                      { "id": "dr4_info", "type": "vstack", "context": { "_spacing": 2, "_alignment": "leading" }, "style": { "layout": { "maxWidth": "infinity" } },
+                        "children": [
+                          { "id": "dr4_nm", "type": "text", "context": { "_text": "@{item.name}" }, "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+                          { "id": "dr4_mt", "type": "text", "context": { "_text": "{{ @{item.kind} + ' · ' + (@{item.on} ? 'On' : 'Off') }}" }, "style": { "common": { "font": "caption", "foreground": "#8E8E93" } } }
+                        ] },
+                      { "id": "dr4_sp", "type": "spacer" },
+                      { "id": "dr4_btn", "type": "button", "context": { "_label": "{{ @{item.on} ? 'Off' : 'On' }}" },
+                        "style": { "button": { "custom": { "layout": { "minHeight": 32, "minWidth": 56, "padding": { "horizontal": 12 } }, "common": { "cornerRadius": 16, "foreground": "white", "background": "{{ @{item.on} ? '#FF3B30' : '#34C759' }}", "font": { "kind": "footnote", "weight": "semibold" } } } } },
+                        "events": { "onTap": [{ "state": { "id": "c4", "input": { "targetId": "@{item.id}", "targetName": "@{item.name}", "targetOn": "{{ @{item.on} ? false : true }}", "targetTime": "{{ cast(#{now}, 'double') }}" }, "output": { "success": [{ "state": { "id": "a4", "input": { "devices": "{{ map(${devices}, { 'id': @{item.id}, 'name': @{item.name}, 'room': @{item.room}, 'kind': @{item.kind}, 'icon': @{item.icon}, 'on': @{item.id} == ${targetId} ? ${targetOn} : @{item.on} }) }}", "activeCount": "{{ sum(map(${devices}, @{item.id} == ${targetId} ? (${targetOn} ? 1 : 0) : (@{item.on} ? 1 : 0))) }}", "recentEvents": "{{ [ { 'id': cast(${targetTime}, 'string'), 'deviceName': ${targetName}, 'action': ${targetOn} ? 'on' : 'off', 'timestamp': ${targetTime} } ] + ${recentEvents} }}" } } }] } } }] } }
+                    ] } }
+
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

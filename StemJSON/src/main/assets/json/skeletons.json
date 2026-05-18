@@ -1,0 +1,397 @@
+{
+  "id": "skeletons_root",
+  "type": "module",
+  "context": {
+    "_title": "Skeletons",
+    "_icon": "text.redaction"
+  },
+  "state": {
+    "isLoading": true,
+    "focused": "",
+    "toggleValue": false,
+    "sliderValue": 0.65,
+    "pickerSelection": "MacBook Pro",
+    "textValue": "",
+    "editorValue": "",
+    "eventDate": "2026-03-24T12:00:00Z",
+    "items": [
+      { "name": "Pro Display XDR", "subtitle": "Retina 6K display" },
+      { "name": "Mac Studio", "subtitle": "M2 Ultra chip" },
+      { "name": "Studio Display", "subtitle": "5K, 600 nits" }
+    ],
+    "onClose": false,
+    "focusCount": 0,
+    "lastFocusEvent": ""
+  },
+  "children": [
+    {
+      "id": "skel_nav",
+      "type": "navigation",
+      "children": [
+        {
+      "id": "skel_scroll",
+      "type": "scroll",
+      "style": {
+        "navigation": {
+          "navigationTitle": "Skeletons",
+          "navigationBarTitleDisplayMode": "large",
+          "toolbarTrailing": {
+            "id": "skel_close_btn",
+            "type": "button",
+            "style": { "button": { "custom": {
+              "layout": { "width": 36, "height": 36 },
+              "common": { "cornerRadius": 18, "background": { "light": "#EFEFEF", "dark": "#2C2C2E" } }
+            } } },
+            "children": [
+              { "id": "skel_close_icon", "type": "image", "context": { "_source": "sf://xmark" },
+                "style": { "layout": { "width": 12, "height": 12 },
+                           "common": { "foreground": { "light": "#262626", "dark": "#FFFFFF" },
+                                       "font": { "kind": "caption", "weight": "bold" } } } }
+            ],
+            "events": { "onTap": [{ "state": { "id": "skel_close_action", "input": { "onClose": true } } }] }
+          }
+        }
+      },
+      "children": [
+        {
+          "id": "skel_root_vstack",
+          "type": "vstack",
+          "context": { "_spacing": 0, "_alignment": "leading" },
+          "style": {
+            "layout": { "padding": { "top": 8, "bottom": 48, "leading": 20, "trailing": 20 } }
+          },
+          "children": [
+
+            {
+              "id": "skel_header_sub",
+              "type": "text",
+              "context": { "_text": "Every component below supports isLoading. Tap to toggle." },
+              "style": {
+                "common": { "font": "footnote", "foreground": { "color": "secondary" } },
+                "layout": { "padding": { "bottom": 20 } }
+              }
+            },
+
+            {
+              "id": "skel_toggle_btn",
+              "type": "button",
+              "context": { "_label": "{{ ${isLoading} ? 'Show Content' : 'Show Skeletons' }}" },
+              "style": {
+                "common": {
+                  "font": "callout",
+                  "tint": "white",
+                  "background": {
+                    "type": "capsule",
+                    "id": "skel_toggle_bg",
+                    "style": { "common": { "foreground": { "color": "blue" } } }
+                  }
+                },
+                "layout": { "padding": { "top": 11, "bottom": 11, "leading": 22, "trailing": 22 } }
+              },
+              "events": {
+                "onTap": [{ "state": { "id": "skel_toggle_loading", "input": { "isLoading": "{{ !${isLoading} }}" } } }]
+              }
+            },
+
+            { "id": "skel_div_top", "type": "divider", "style": { "layout": { "padding": { "top": 28, "bottom": 24 } } } },
+
+            {
+              "id": "skel_sec_text",
+              "type": "text",
+              "context": { "_text": "Text" },
+              "style": { "common": { "font": "headline", "foreground": { "color": "secondary" } }, "layout": { "padding": { "bottom": 12 } } }
+            },
+            {
+              "id": "skel_text_title",
+              "type": "text",
+              "context": { "_text": "The quick brown fox", "_skeletonHeight": 24, "_isLoading": "${isLoading}" },
+              "style": { "common": { "font": "title2", "foreground": { "color": "primary" } }, "layout": { "padding": { "bottom": 8 } } }
+            },
+            {
+              "id": "skel_text_sub",
+              "type": "text",
+              "context": { "_text": "Jumps over the lazy dog", "_skeletonHeight": 14, "_isLoading": "${isLoading}" },
+              "style": { "common": { "font": "subheadline", "foreground": { "color": "secondary" } }, "layout": { "padding": { "bottom": 8 } } }
+            },
+            {
+              "id": "skel_text_caption",
+              "type": "text",
+              "context": { "_text": "Caption text variant", "_skeletonHeight": 10, "_isLoading": "${isLoading}" },
+              "style": { "common": { "font": "caption", "foreground": { "color": "secondary" } } }
+            },
+
+            { "id": "skel_div_text", "type": "divider", "style": { "layout": { "padding": { "top": 20, "bottom": 20 } } } },
+
+            {
+              "id": "skel_sec_image",
+              "type": "text",
+              "context": { "_text": "Image" },
+              "style": { "common": { "font": "headline", "foreground": { "color": "secondary" } }, "layout": { "padding": { "bottom": 12 } } }
+            },
+            {
+              "id": "skel_images_hstack",
+              "type": "hstack",
+              "context": { "_spacing": 14, "_alignment": "center" },
+              "children": [
+                {
+                  "id": "skel_img_fit",
+                  "type": "image",
+                  "context": { "_source": "sf://photo", "_contentMode": "fit", "_isLoading": "${isLoading}" },
+                  "style": { "layout": { "width": 60 } }
+                },
+                {
+                  "id": "skel_img_circle",
+                  "type": "image",
+                  "context": { "_source": "sf://person.crop.circle.fill", "_contentMode": "fit", "_isLoading": "${isLoading}" },
+                  "style": { "layout": { "width": 72, "height": 72 }, "common": { "cornerRadius": 36 } }
+                },
+                {
+                  "id": "skel_img_fill",
+                  "type": "image",
+                  "context": { "_source": "sf://mountain.2.fill", "_contentMode": "fill", "_isLoading": "${isLoading}" },
+                  "style": { "layout": { "width": 120, "height": 72 }, "common": { "cornerRadius": 12 } }
+                }
+              ]
+            },
+
+            { "id": "skel_div_image", "type": "divider", "style": { "layout": { "padding": { "top": 20, "bottom": 20 } } } },
+
+            {
+              "id": "skel_sec_button",
+              "type": "text",
+              "context": { "_text": "Button" },
+              "style": { "common": { "font": "headline", "foreground": { "color": "secondary" } }, "layout": { "padding": { "bottom": 12 } } }
+            },
+            {
+              "id": "skel_demo_btn",
+              "type": "button",
+              "context": { "_label": "Continue", "_image": "sf://arrow.right", "_isLoading": "${isLoading}" },
+              "style": {
+                "common": {
+                  "font": "body",
+                  "tint": "white",
+                  "background": {
+                    "type": "capsule",
+                    "id": "skel_btn_bg",
+                    "style": { "common": { "foreground": { "color": "indigo" } } }
+                  }
+                },
+                "layout": { "height": 48, "maxWidth": 9999 }
+              }
+            },
+
+            { "id": "skel_div_button", "type": "divider", "style": { "layout": { "padding": { "top": 20, "bottom": 20 } } } },
+
+            {
+              "id": "skel_sec_label",
+              "type": "text",
+              "context": { "_text": "Label" },
+              "style": { "common": { "font": "headline", "foreground": { "color": "secondary" } }, "layout": { "padding": { "bottom": 12 } } }
+            },
+            {
+              "id": "skel_demo_label",
+              "type": "label",
+              "context": { "_image": "sf://star.fill", "_title": "Favourite Items", "_isLoading": "${isLoading}" },
+              "style": { "common": { "font": "body", "foreground": { "color": "primary" } } }
+            },
+
+            { "id": "skel_div_label", "type": "divider", "style": { "layout": { "padding": { "top": 20, "bottom": 20 } } } },
+
+            {
+              "id": "skel_sec_tf",
+              "type": "text",
+              "context": { "_text": "Text Field" },
+              "style": { "common": { "font": "headline", "foreground": { "color": "secondary" } }, "layout": { "padding": { "bottom": 12 } } }
+            },
+            {
+              "id": "skel_demo_tf",
+              "type": "textfield",
+              "context": {
+                "_label": "Email address",
+                "_text": "${textValue}",
+                "_focused": "{{ ${focused} == 'skel_demo_tf' }}",
+                "_isLoading": "${isLoading}"
+              },
+              "style": { "layout": { "height": 44 } },
+              "events": {
+                "onFocus": [
+                  { "state": { "id": "skel_tf_focus",
+                               "input": { "focusCount": "{{ ${focusCount} + 1 }}",
+                                          "lastFocusEvent": "focused" } } }
+                ],
+                "onBlur": [
+                  { "state": { "id": "skel_tf_blur",
+                               "input": { "lastFocusEvent": "blurred" } } }
+                ]
+              }
+            },
+            {
+              "id": "skel_focus_log",
+              "type": "text",
+              "context": { "_text": "{{ 'onFocus/onBlur — count: ' + ${focusCount} + '   last: ' + ${lastFocusEvent} }}" },
+              "style": { "common": { "font": { "kind": "caption", "design": "monospaced" },
+                                     "foreground": { "light": "#8E8E93", "dark": "#AEAEB2" } },
+                         "layout": { "padding": { "top": 6 } } }
+            },
+
+            { "id": "skel_div_tf", "type": "divider", "style": { "layout": { "padding": { "top": 20, "bottom": 20 } } } },
+
+            {
+              "id": "skel_sec_te",
+              "type": "text",
+              "context": { "_text": "Text Editor" },
+              "style": { "common": { "font": "headline", "foreground": { "color": "secondary" } }, "layout": { "padding": { "bottom": 12 } } }
+            },
+            {
+              "id": "skel_demo_te",
+              "type": "texteditor",
+              "context": {
+                "_text": "${editorValue}",
+                "_placeholder": "Write something...",
+                "_focused": "{{ ${focused} == 'skel_demo_te' }}",
+                "_isLoading": "${isLoading}"
+              },
+              "style": { "layout": { "height": 100 } }
+            },
+
+            { "id": "skel_div_te", "type": "divider", "style": { "layout": { "padding": { "top": 20, "bottom": 20 } } } },
+
+            {
+              "id": "skel_sec_toggle",
+              "type": "text",
+              "context": { "_text": "Toggle" },
+              "style": { "common": { "font": "headline", "foreground": { "color": "secondary" } }, "layout": { "padding": { "bottom": 12 } } }
+            },
+            {
+              "id": "skel_demo_toggle",
+              "type": "toggle",
+              "context": { "_label": "Enable notifications", "_isOn": "${toggleValue}", "_isLoading": "${isLoading}" }
+            },
+
+            { "id": "skel_div_toggle", "type": "divider", "style": { "layout": { "padding": { "top": 20, "bottom": 20 } } } },
+
+            {
+              "id": "skel_sec_slider",
+              "type": "text",
+              "context": { "_text": "Slider" },
+              "style": { "common": { "font": "headline", "foreground": { "color": "secondary" } }, "layout": { "padding": { "bottom": 12 } } }
+            },
+            {
+              "id": "skel_demo_slider",
+              "type": "slider",
+              "context": { "_value": "${sliderValue}", "_isLoading": "${isLoading}" }
+            },
+
+            { "id": "skel_div_slider", "type": "divider", "style": { "layout": { "padding": { "top": 20, "bottom": 20 } } } },
+
+            {
+              "id": "skel_sec_progress",
+              "type": "text",
+              "context": { "_text": "Progress" },
+              "style": { "common": { "font": "headline", "foreground": { "color": "secondary" } }, "layout": { "padding": { "bottom": 12 } } }
+            },
+            {
+              "id": "skel_demo_progress",
+              "type": "progress",
+              "context": { "_value": 0.65, "_total": 1.0, "_isLoading": "${isLoading}" },
+              "style": { "layout": { "width": 64, "height": 64 } }
+            },
+
+            { "id": "skel_div_progress", "type": "divider", "style": { "layout": { "padding": { "top": 20, "bottom": 20 } } } },
+
+            {
+              "id": "skel_sec_picker",
+              "type": "text",
+              "context": { "_text": "Picker" },
+              "style": { "common": { "font": "headline", "foreground": { "color": "secondary" } }, "layout": { "padding": { "bottom": 12 } } }
+            },
+            {
+              "id": "skel_demo_picker",
+              "type": "picker",
+              "context": { "_label": "Favourite device", "_selection": "${pickerSelection}", "_isLoading": "${isLoading}" },
+              "style": { "picker": "menu" },
+              "children": [
+                { "id": "skel_pick_mini", "type": "text", "context": { "_text": "Mac mini", "_value": "Mac mini" } },
+                { "id": "skel_pick_pro", "type": "text", "context": { "_text": "MacBook Pro", "_value": "MacBook Pro" } },
+                { "id": "skel_pick_studio", "type": "text", "context": { "_text": "Mac Studio", "_value": "Mac Studio" } }
+              ]
+            },
+
+            { "id": "skel_div_picker", "type": "divider", "style": { "layout": { "padding": { "top": 20, "bottom": 20 } } } },
+
+            {
+              "id": "skel_sec_dp",
+              "type": "text",
+              "context": { "_text": "Date Picker" },
+              "style": { "common": { "font": "headline", "foreground": { "color": "secondary" } }, "layout": { "padding": { "bottom": 12 } } }
+            },
+            {
+              "id": "skel_demo_dp",
+              "type": "datePicker",
+              "context": { "_label": "Appointment", "_date": "${eventDate}", "_components": "date", "_isLoading": "${isLoading}" }
+            },
+
+            { "id": "skel_div_dp", "type": "divider", "style": { "layout": { "padding": { "top": 20, "bottom": 20 } } } },
+
+            {
+              "id": "skel_sec_dynamic",
+              "type": "text",
+              "context": { "_text": "Dynamic List" },
+              "style": { "common": { "font": "headline", "foreground": { "color": "secondary" } }, "layout": { "padding": { "bottom": 4 } } }
+            },
+            {
+              "id": "skel_dynamic_sub",
+              "type": "text",
+              "context": { "_text": "Prototype renders its own skeleton shape." },
+              "style": { "common": { "font": "caption", "foreground": { "color": "secondary" } }, "layout": { "padding": { "bottom": 12 } } }
+            },
+            {
+              "id": "skel_demo_dynamic",
+              "type": "dynamic",
+              "context": { "_isLoading": "${isLoading}", "_skeletonRows": 3, "_data": "${items}" },
+              "prototype": {
+                "id": "skel_proto_row",
+                "type": "hstack",
+                "context": { "_spacing": 12, "_alignment": "center" },
+                "style": { "layout": { "padding": { "top": 8, "bottom": 8 } } },
+                "children": [
+                  {
+                    "id": "skel_proto_img",
+                    "type": "image",
+                    "context": { "_source": "sf://shippingbox.fill", "_contentMode": "fit", "_isLoading": "${isLoading}" },
+                    "style": {
+                      "layout": { "width": 44, "height": 44 },
+                      "common": { "foreground": { "color": "blue" }, "cornerRadius": 10 }
+                    }
+                  },
+                  {
+                    "id": "skel_proto_info",
+                    "type": "vstack",
+                    "context": { "_spacing": 4, "_alignment": "leading" },
+                    "children": [
+                      {
+                        "id": "skel_proto_title",
+                        "type": "text",
+                        "context": { "_text": "@{item.name}", "_skeletonHeight": 16, "_isLoading": "${isLoading}" },
+                        "style": { "common": { "font": "body", "foreground": { "color": "primary" } } }
+                      },
+                      {
+                        "id": "skel_proto_sub",
+                        "type": "text",
+                        "context": { "_text": "@{item.subtitle}", "_skeletonHeight": 11, "_isLoading": "${isLoading}" },
+                        "style": { "common": { "font": "caption", "foreground": { "color": "secondary" } } }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+
+          ]
+        }
+      ]
+    }
+      ]
+    }
+  ]
+}

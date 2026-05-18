@@ -1,0 +1,53 @@
+{
+  "id": "hello",
+  "type": "module",
+  "state": { "name": "World", "onClose": false },
+  "children": [
+    {
+      "id": "hello_vstack",
+      "type": "vstack",
+      "context": { "_spacing": 16 },
+      "style": { "layout": { "maxWidth": "infinity", "maxHeight": "infinity", "alignment": "center", "padding": 24 } },
+      "children": [
+        {
+          "id": "hello_close_row",
+          "type": "hstack",
+          "style": { "layout": { "maxWidth": "infinity" } },
+          "children": [
+            { "id": "hello_sp", "type": "spacer" },
+            {
+              "id": "hello_close",
+              "type": "button",
+              "style": { "button": { "custom": {
+                "layout": { "width": 36, "height": 36 },
+                "common": { "cornerRadius": 18, "background": { "light": "#EFEFEF", "dark": "#2C2C2E" } }
+              } } },
+              "children": [
+                { "id": "hello_close_icon", "type": "image", "context": { "_source": "sf://xmark" },
+                  "style": { "layout": { "width": 12, "height": 12 },
+                             "common": { "foreground": { "light": "#262626", "dark": "#FFFFFF" },
+                                         "font": { "kind": "caption", "weight": "bold" } } } }
+              ],
+              "events": { "onTap": [
+                { "state": { "id": "hello_close_act", "input": { "onClose": true } } }
+              ] }
+            }
+          ]
+        },
+        {
+          "id": "hello_title",
+          "type": "text",
+          "context": { "_text": "{{ 'Hello, ' + ${name} + '!' }}" },
+          "style": { "common": { "font": { "kind": "system", "size": 34, "weight": "bold", "design": "rounded" } } }
+        },
+        {
+          "id": "hello_input",
+          "type": "textfield",
+          "context": { "_label": "Your name", "_text": "${name}", "_debounce": 0 },
+          "style": { "textField": { "standard": "roundedBorder" },
+                     "layout": { "maxWidth": 320 } }
+        }
+      ]
+    }
+  ]
+}

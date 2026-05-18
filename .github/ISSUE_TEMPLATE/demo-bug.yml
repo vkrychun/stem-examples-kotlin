@@ -1,0 +1,53 @@
+name: Demo bug / setup issue
+description: Something is broken in the demo projects or setup instructions.
+title: "[Demo] "
+labels: ["demo-bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template only for issues **in the demo projects themselves** — a demo that doesn't build, crashes on launch, renders wrong, or has a setup instruction that doesn't work.
+
+        - **SDK bugs** (runtime errors, validator issues, rendering glitches that affect any StemJSON payload) → file at [vkrychun/stem-runtime-kotlin](https://github.com/vkrychun/stem-runtime-kotlin/issues).
+        - **Spec questions** (does this JSON construct work as documented?) → file at [vkrychun/StemJSON](https://github.com/vkrychun/StemJSON/issues).
+  - type: dropdown
+    id: demo
+    attributes:
+      label: Which demo
+      options:
+        - StemQuickStart
+        - StemCompose
+        - StemHome
+        - StemJSON module
+        - README / setup docs
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: agp-version
+    attributes:
+      label: Android Gradle Plugin version
+      placeholder: "8.7.0"
+    validations:
+      required: true
+  - type: input
+    id: android-version
+    attributes:
+      label: Android version (emulator or device)
+      placeholder: "14 / API 34"
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: What's broken
+      description: What you expected, what happens instead, and how to reproduce.
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Logs / screenshots
+      description: Build output, logcat (`adb logcat -s com.stem.runtime.sdk`), or screen recordings.
+    validations:
+      required: false

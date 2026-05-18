@@ -1,0 +1,212 @@
+{
+  "id": "mod_booking",
+  "type": "module",
+  "version": "1.0",
+  "context": { "_title": "Book a Table", "_icon": "calendar.badge.plus" },
+  "state": {
+    "name": "",
+    "partySize": "2",
+    "date": "#{tomorrow}",
+    "timeSlot": "19:00",
+    "outdoor": false,
+    "specialRequests": "",
+    "showConfirmation": false,
+    "bookingConfirmed": false,
+    "onClose": false
+  },
+  "children": [
+    {
+      "id": "booking_root_stack",
+      "type": "vstack",
+      "context": { "_spacing": 0 },
+      "style": { "layout": { "maxWidth": "infinity", "maxHeight": "infinity" } },
+      "children": [
+        {
+          "id": "booking_header",
+          "type": "hstack",
+          "context": { "_spacing": 0, "_alignment": "center" },
+          "style": { "layout": { "maxWidth": "infinity", "padding": { "horizontal": 20, "top": 16, "bottom": 8 } } },
+          "children": [
+            { "id": "booking_title", "type": "text", "context": { "_text": "Book a Table" },
+              "style": { "common": { "font": { "kind": "title2", "weight": "bold" } } } },
+            { "id": "booking_spacer", "type": "spacer" },
+            { "id": "booking_close", "type": "button",
+              "style": { "button": { "custom": {
+                "layout": { "width": 36, "height": 36 },
+                "common": { "cornerRadius": 18, "background": { "light": "#EFEFEF", "dark": "#2C2C2E" } }
+              } } },
+              "children": [
+                { "id": "booking_close_icon", "type": "image", "context": { "_source": "sf://xmark" },
+                  "style": { "layout": { "width": 12, "height": 12 },
+                             "common": { "foreground": { "light": "#262626", "dark": "#FFFFFF" },
+                                         "font": { "kind": "caption", "weight": "bold" } } } }
+              ],
+              "events": { "onTap": [{ "state": { "id": "act_close", "input": { "onClose": true } } }] } }
+          ]
+        },
+        {
+          "id": "booking_root",
+          "type": "conditional",
+          "context": {
+            "_condition": "${bookingConfirmed}",
+            "_trueComponent": {
+              "id": "confirmation_view",
+              "type": "scroll",
+              "style": { "layout": { "maxWidth": "infinity", "maxHeight": "infinity" } },
+              "children": [
+                {
+                  "id": "conf_stack",
+                  "type": "vstack",
+                  "context": { "_spacing": 16 },
+                  "style": { "layout": { "maxWidth": "infinity", "padding": { "top": 60, "horizontal": 24 } } },
+                  "children": [
+                    { "id": "conf_icon", "type": "image", "context": { "_source": "sf://checkmark.circle.fill" },
+                      "style": { "layout": { "width": 64, "height": 64 }, "common": { "foreground": "#34C759" } } },
+                    { "id": "conf_title", "type": "text", "context": { "_text": "You're all set!" },
+                      "style": { "common": { "font": { "kind": "title", "weight": "bold" } } } },
+                    { "id": "conf_subtitle", "type": "text", "context": { "_text": "Your reservation has been confirmed." },
+                      "style": { "common": { "font": "subheadline", "foreground": { "light": "#8E8E93", "dark": "#A8A8A8" } } } },
+                    {
+                      "id": "conf_card",
+                      "type": "vstack",
+                      "context": { "_spacing": 12, "_alignment": "leading" },
+                      "style": { "layout": { "maxWidth": "infinity", "padding": 20 },
+                                 "common": { "cornerRadius": 16, "background": { "light": "#F2F2F7", "dark": "#1C1C1E" } } },
+                      "children": [
+                        { "id": "conf_name", "type": "text",
+                          "context": { "_text": "{{ notEmpty(${name}) ? ${name} : 'Guest' }}" },
+                          "style": { "common": { "font": { "kind": "headline" } } } },
+                        { "id": "conf_details", "type": "text",
+                          "context": { "_text": "{{ ${partySize} + ' guests · ' + ${timeSlot} }}" },
+                          "style": { "common": { "font": "subheadline", "foreground": { "light": "#8E8E93", "dark": "#A8A8A8" } } } },
+                        { "id": "conf_date", "type": "text",
+                          "context": { "_text": "${date}", "_format": { "date": { "style": "custom", "pattern": "EEEE, d MMMM yyyy" } } },
+                          "style": { "common": { "font": "subheadline", "foreground": { "light": "#8E8E93", "dark": "#A8A8A8" } } } },
+                        {
+                          "id": "conf_outdoor",
+                          "type": "conditional",
+                          "context": {
+                            "_condition": "${outdoor}",
+                            "_trueComponent": { "id": "conf_outdoor_label", "type": "label",
+                              "context": { "_title": "Outdoor seating", "_image": "sf://sun.max.fill" },
+                              "style": { "common": { "font": "caption", "foreground": "#FF9F0A" } } },
+                            "_falseComponent": { "id": "conf_outdoor_empty", "type": "empty" }
+                          }
+                        }
+                      ]
+                    },
+                    { "id": "conf_done_btn", "type": "button",
+                      "context": { "_label": "Done" },
+                      "style": { "button": { "custom": {
+                        "layout": { "maxWidth": "infinity", "minHeight": 50 },
+                        "common": { "foreground": "white", "cornerRadius": 14,
+                                    "background": "#34C759",
+                                    "font": { "kind": "headline" } }
+                      } } },
+                      "events": { "onTap": [{ "state": { "id": "act_done", "input": { "onClose": true } } }] } }
+                  ]
+                }
+              ]
+            },
+            "_falseComponent": {
+              "id": "booking_form",
+              "type": "form",
+              "style": {
+                "modal": {
+                  "alert": {
+                    "isPresented": "${showConfirmation}",
+                    "title": "Confirm Reservation",
+                    "message": "{{ ${partySize} + ' guests at ' + ${timeSlot} + (${outdoor} ? ', outdoor' : '') }}",
+                    "actions": [
+                      { "id": "alert_book", "type": "button", "context": { "_label": "Confirm" },
+                        "events": { "onTap": [{ "state": { "id": "act_book", "input": { "bookingConfirmed": true, "showConfirmation": false } } }] } },
+                      { "id": "alert_cancel", "type": "button", "context": { "_label": "Cancel" },
+                        "style": { "common": { "foreground": "#FF3B30" } },
+                        "events": { "onTap": [{ "state": { "id": "act_alert_cancel", "input": { "showConfirmation": false } } }] } }
+                    ]
+                  }
+                }
+              },
+              "children": [
+                {
+                  "id": "section_reservation",
+                  "type": "section",
+                  "context": { "_title": "Reservation" },
+                  "children": [
+                    { "id": "date_picker", "type": "datePicker",
+                      "context": { "_label": "Date", "_date": "${date}", "_min": "#{today}" },
+                      "style": { "datePicker": "compact" } },
+                    { "id": "time_picker", "type": "picker",
+                      "context": { "_label": "Time", "_selection": "${timeSlot}" },
+                      "style": { "picker": "menu" },
+                      "children": [
+                        { "id": "t1",  "type": "text", "context": { "_text": "12:00", "_value": "12:00" } },
+                        { "id": "t2",  "type": "text", "context": { "_text": "12:30", "_value": "12:30" } },
+                        { "id": "t3",  "type": "text", "context": { "_text": "13:00", "_value": "13:00" } },
+                        { "id": "t4",  "type": "text", "context": { "_text": "13:30", "_value": "13:30" } },
+                        { "id": "t5",  "type": "text", "context": { "_text": "18:00", "_value": "18:00" } },
+                        { "id": "t6",  "type": "text", "context": { "_text": "18:30", "_value": "18:30" } },
+                        { "id": "t7",  "type": "text", "context": { "_text": "19:00", "_value": "19:00" } },
+                        { "id": "t8",  "type": "text", "context": { "_text": "19:30", "_value": "19:30" } },
+                        { "id": "t9",  "type": "text", "context": { "_text": "20:00", "_value": "20:00" } },
+                        { "id": "t10", "type": "text", "context": { "_text": "20:30", "_value": "20:30" } },
+                        { "id": "t11", "type": "text", "context": { "_text": "21:00", "_value": "21:00" } }
+                      ] },
+                    { "id": "party_picker", "type": "picker",
+                      "context": { "_label": "Guests", "_selection": "${partySize}",
+                                   "_options": ["1", "2", "3", "4", "5", "6", "7", "8"] },
+                      "style": { "picker": "menu" } }
+                  ]
+                },
+                {
+                  "id": "section_details",
+                  "type": "section",
+                  "context": { "_title": "Your details" },
+                  "children": [
+                    { "id": "name_field", "type": "textfield",
+                      "context": { "_label": "Name", "_text": "${name}", "_debounce": 0 },
+                      "style": { "textField": { "submitLabel": "next" } },
+                      "events": { "onSubmit": [{ "state": { "id": "act_name_submit", "input": {} } }] } }
+                  ]
+                },
+                {
+                  "id": "section_prefs",
+                  "type": "section",
+                  "context": { "_title": "Preferences" },
+                  "children": [
+                    { "id": "outdoor_toggle", "type": "toggle",
+                      "context": { "_label": "Outdoor seating", "_image": "sun.max.fill", "_isOn": "${outdoor}" } },
+                    { "id": "requests_field", "type": "textfield",
+                      "context": { "_label": "Special requests (optional)", "_text": "${specialRequests}", "_debounce": 0 } }
+                  ]
+                },
+                {
+                  "id": "section_submit",
+                  "type": "section",
+                  "children": [
+                    { "id": "submit_btn", "type": "button",
+                      "context": { "_label": "Reserve" },
+                      "style": { "button": { "custom": {
+                        "layout": { "maxWidth": "infinity", "minHeight": 50 },
+                        "common": { "foreground": "white", "cornerRadius": 14,
+                                    "background": { "gradient": { "linear": { "colors": ["#5856D6", "#3634A3"], "startPoint": "leading", "endPoint": "trailing" } } },
+                                    "font": { "kind": "headline" } }
+                      } } },
+                      "events": { "onTap": [
+                        { "state": { "id": "act_confirm", "input": { "showConfirmation": true } } }
+                      ] } }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "events": {
+    "onAppear": [
+      { "state": { "id": "act_reset", "input": { "onClose": false, "bookingConfirmed": false } } }
+    ]
+  }
+}

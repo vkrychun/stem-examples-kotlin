@@ -1,0 +1,157 @@
+{
+  "id": "mod_gallery",
+  "type": "module",
+  "version": "1.0",
+  "context": { "_title": "Gallery", "_icon": "photo.on.rectangle.angled" },
+  "state": {
+    "photos": [],
+    "favorites": [],
+    "onClose": false
+  },
+  "dependencies": [
+    { "repository": { "photos": { "id": "dep_photos", "config": {} } } }
+  ],
+  "children": [
+    {
+      "id": "gallery_root",
+      "type": "vstack",
+      "context": { "_spacing": 0 },
+      "style": { "layout": { "maxWidth": "infinity", "maxHeight": "infinity" } },
+      "children": [
+        {
+          "id": "gallery_header",
+          "type": "hstack",
+          "context": { "_spacing": 12, "_alignment": "center" },
+          "style": { "layout": { "maxWidth": "infinity", "padding": { "horizontal": 20, "top": 16, "bottom": 12 } } },
+          "children": [
+            { "id": "header_title", "type": "text", "context": { "_text": "Gallery" },
+              "style": { "common": { "font": { "kind": "largeTitle", "weight": "bold" } } } },
+            { "id": "header_sp", "type": "spacer" },
+            { "id": "add_btn", "type": "button",
+              "style": { "button": { "custom": {
+                "layout": { "width": 36, "height": 36 },
+                "common": { "cornerRadius": 18, "background": "#007AFF" }
+              } } },
+              "children": [
+                { "id": "add_icon", "type": "image", "context": { "_source": "sf://plus" },
+                  "style": { "layout": { "width": 16, "height": 16 }, "common": { "foreground": "white", "font": { "kind": "body", "weight": "bold" } } } }
+              ],
+              "events": { "onTap": [
+                { "repo": {
+                    "id": "pick_photo",
+                    "input": { "repositoryId": "dep_photos", "operation": "read", "params": { "selectionLimit": 9 } },
+                    "output": {
+                      "success": [{ "state": { "id": "act_add", "input": { "photos": "{{ ${photos} + @{pick_photo} }}" } } }]
+                    }
+                } }
+              ] } },
+            { "id": "header_gap", "type": "spacer", "style": { "layout": { "width": 6 } } },
+            { "id": "close_btn", "type": "button",
+              "style": { "button": { "custom": {
+                "layout": { "width": 36, "height": 36 },
+                "common": { "cornerRadius": 18, "background": { "light": "#EFEFEF", "dark": "#2C2C2E" } }
+              } } },
+              "children": [
+                { "id": "close_icon", "type": "image", "context": { "_source": "sf://xmark" },
+                  "style": { "layout": { "width": 12, "height": 12 }, "common": { "foreground": { "light": "#262626", "dark": "#FFFFFF" }, "font": { "kind": "caption", "weight": "bold" } } } }
+              ],
+              "events": { "onTap": [{ "state": { "id": "act_close", "input": { "onClose": true } } }] } }
+          ]
+        },
+        {
+          "id": "gallery_body",
+          "type": "conditional",
+          "context": {
+            "_condition": "{{ empty(${photos}) }}",
+            "_trueComponent": {
+              "id": "empty_state",
+              "type": "vstack",
+              "context": { "_spacing": 16 },
+              "style": { "layout": { "maxWidth": "infinity", "maxHeight": "infinity", "padding": { "top": 100 } } },
+              "children": [
+                { "id": "empty_icon", "type": "image", "context": { "_source": "sf://photo.on.rectangle.angled" },
+                  "style": { "layout": { "width": 64, "height": 64 }, "common": { "foreground": { "light": "#C7C7CC", "dark": "#48484A" } } } },
+                { "id": "empty_title", "type": "text", "context": { "_text": "No photos yet" },
+                  "style": { "common": { "font": { "kind": "title3", "weight": "semibold" }, "foreground": { "light": "#8E8E93", "dark": "#A8A8A8" } } } },
+                { "id": "empty_hint", "type": "text", "context": { "_text": "Tap + to add photos from your library" },
+                  "style": { "common": { "font": "subheadline", "foreground": { "light": "#C7C7CC", "dark": "#48484A" } } } }
+              ]
+            },
+            "_falseComponent": {
+              "id": "gallery_content",
+              "type": "vstack",
+              "context": { "_spacing": 8 },
+              "style": { "layout": { "maxWidth": "infinity", "maxHeight": "infinity" } },
+              "children": [
+                { "id": "stats_count", "type": "text",
+                  "context": { "_text": "{{ cast(count(${photos}), 'string') + ' photos · double-tap to favorite' }}" },
+                  "style": { "layout": { "padding": { "horizontal": 20 } },
+                             "common": { "font": "caption", "foreground": { "light": "#8E8E93", "dark": "#A8A8A8" } } } },
+                {
+                  "id": "photo_grid_scroll",
+                  "type": "scroll",
+                  "style": { "layout": { "maxWidth": "infinity", "maxHeight": "infinity" } },
+                  "children": [
+                    {
+                      "id": "photo_grid",
+                      "type": "grid",
+                      "context": { "_gridType": "lazyVGrid", "_spacing": 2 },
+                      "style": { "grid": { "columns": [{ "kind": "adaptive", "minimum": 120 }] },
+                                 "layout": { "padding": { "horizontal": 2 } } },
+                      "children": [
+                        {
+                          "id": "grid_dynamic",
+                          "type": "dynamic",
+                          "context": { "_data": "${photos}" },
+                          "prototype": {
+                            "id": "photo_cell",
+                            "type": "zstack",
+                            "context": { "_alignment": "bottomTrailing" },
+                            "style": { "layout": { "maxWidth": "infinity", "height": 120 } },
+                            "children": [
+                              { "id": "cell_img", "type": "image",
+                                "context": { "_source": "@{item}", "_contentMode": "fill" },
+                                "style": { "layout": { "maxWidth": "infinity", "maxHeight": "infinity" } },
+                                "events": {
+                                  "onDoubleTap": [
+                                    { "state": {
+                                        "id": "act_fav",
+                                        "input": {
+                                          "favorites": "{{ ${favorites} ~ @{item} ? ${favorites} - @{item} : ${favorites} + @{item} }}"
+                                        }
+                                    } }
+                                  ]
+                                } },
+                              { "id": "cell_badge", "type": "conditional",
+                                "context": {
+                                  "_condition": "{{ ${favorites} ~ @{item} }}",
+                                  "_trueComponent": {
+                                    "id": "heart_on", "type": "image",
+                                    "context": { "_source": "sf://heart.fill" },
+                                    "style": { "layout": { "width": 28, "height": 28, "padding": 8 },
+                                               "common": { "foreground": "white",
+                                                            "background": { "color": { "color": "#FF2D55", "opacity": 0.85 } },
+                                                            "cornerRadius": 14 },
+                                               "shadow": { "color": { "color": "black", "opacity": 0.3 }, "radius": 4, "y": 2 } } },
+                                  "_falseComponent": { "id": "heart_off", "type": "empty" }
+                                } }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "events": {
+    "onAppear": [
+      { "state": { "id": "act_reset", "input": { "onClose": false } } }
+    ]
+  }
+}

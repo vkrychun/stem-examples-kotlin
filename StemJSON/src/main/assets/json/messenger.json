@@ -1,0 +1,534 @@
+{
+  "id": "messenger_root",
+  "type": "module",
+  "context": { "_title": "Messenger", "_icon": "bubble.left.and.bubble.right" },
+  "state": {
+    "message": "",
+    "tmpMessage": {},
+    "messages": [],
+    "error": "",
+    "isError": false,
+    "showSettings": false,
+    "showProfile": false,
+    "userName": "Anonymous",
+    "userAvatar": "person.circle.fill",
+    "profileConfigured": false,
+    "apiKey": "",
+    "projectId": "",
+    "googleAppId": "",
+    "firebaseConfigured": false,
+    "apiKeySecured": true,
+    "secureIcon": "sf://eye.slash",
+    "bubbleStyle": "rounded",
+    "iconScale": 0.8,
+    "onClose": false
+  },
+  "dependencies": [
+    { "repository": { "firebase": { "id": "msg_firebase", "config": { "collectionPath": "apps/messenger_demo" } } } },
+    { "repository": { "secured": { "id": "msg_secured", "config": {} } } },
+    { "service": { "audio": { "id": "msg_audio" } } },
+    { "service": { "push": { "id": "msg_push" } } },
+    {
+      "component": {
+        "id": "dep_outgoing",
+        "type": "hstack",
+        "context": { "_spacing": 8, "_alignment": "bottom" },
+        "children": [
+          { "id": "out_sp", "type": "spacer" },
+          {
+            "id": "out_col",
+            "type": "vstack",
+            "context": { "_spacing": 2, "_alignment": "trailing" },
+            "children": [
+              {
+                "id": "out_bubble",
+                "type": "text",
+                "context": { "_text": "@{item.text}" },
+                "style": {
+                  "common": {
+                    "font": "body",
+                    "foreground": { "color": "white" },
+                    "background": { "gradient": { "linear": { "colors": ["#007AFF", "#0051D4"], "startPoint": "topLeading", "endPoint": "bottomTrailing" } } },
+                    "cornerRadius": 18
+                  },
+                  "shadow": { "color": { "color": "#007AFF", "opacity": 0.3 }, "radius": 4, "x": 0, "y": 2 },
+                  "layout": { "maxWidth": 260, "padding": { "horizontal": 14, "vertical": 10 } }
+                }
+              },
+              {
+                "id": "out_time",
+                "type": "text",
+                "context": { "_text": "@{item.created_at}", "_format": { "date": { "style": "custom", "pattern": "d MMM, HH:mm" } } },
+                "style": { "common": { "font": "caption2", "foreground": { "color": "secondary" } }, "layout": { "padding": { "horizontal": 4 } } }
+              }
+            ]
+          },
+          {
+            "id": "out_avatar",
+            "type": "image",
+            "context": { "_source": "{{ notEmpty(@{item.userAvatar}) ? ('sf://' + @{item.userAvatar}) : 'sf://person.circle.fill' }}" },
+            "style": { "layout": { "width": 44, "height": 44 }, "common": { "foreground": "#007AFF" } }
+          }
+        ]
+      }
+    },
+    {
+      "component": {
+        "id": "dep_incoming",
+        "type": "hstack",
+        "context": { "_spacing": 8, "_alignment": "bottom" },
+        "children": [
+          {
+            "id": "in_avatar",
+            "type": "image",
+            "context": { "_source": "{{ notEmpty(@{item.userAvatar}) ? ('sf://' + @{item.userAvatar}) : 'sf://person.circle.fill' }}" },
+            "style": { "layout": { "width": 44, "height": 44 }, "common": { "foreground": "#5AC8FA" } }
+          },
+          {
+            "id": "in_col",
+            "type": "vstack",
+            "context": { "_spacing": 2, "_alignment": "leading" },
+            "children": [
+              {
+                "id": "in_name",
+                "type": "text",
+                "context": { "_text": "{{ @{item.userName} ?? 'Unknown' }}" },
+                "style": { "common": { "font": "caption2", "foreground": { "color": "secondary" } }, "layout": { "padding": { "leading": 4 } } }
+              },
+              {
+                "id": "in_bubble",
+                "type": "text",
+                "context": { "_text": "@{item.text}" },
+                "style": {
+                  "common": {
+                    "font": "body",
+                    "foreground": { "color": "onsurface" },
+                    "background": { "light": "#E9E9EB", "dark": "#2C2C2E" },
+                    "cornerRadius": 18
+                  },
+                  "layout": { "maxWidth": 260, "padding": { "horizontal": 14, "vertical": 10 } }
+                }
+              },
+              {
+                "id": "in_time",
+                "type": "text",
+                "context": { "_text": "@{item.created_at}", "_format": { "date": { "style": "custom", "pattern": "d MMM, HH:mm" } } },
+                "style": { "common": { "font": "caption2", "foreground": { "color": "secondary" } }, "layout": { "padding": { "horizontal": 4 } } }
+              }
+            ]
+          },
+          { "id": "in_sp", "type": "spacer" }
+        ]
+      }
+    },
+    {
+      "component": {
+        "id": "dep_bubble_shape_out",
+        "type": "bubble",
+        "context": { "_outgoing": true },
+        "style": { "shape": {
+          "fill": { "gradient": { "linear": { "colors": ["#007AFF", "#0051D4"], "startPoint": "topLeading", "endPoint": "bottomTrailing" } } }
+        } }
+      }
+    },
+    {
+      "component": {
+        "id": "dep_bubble_shape_in",
+        "type": "bubble",
+        "context": { "_outgoing": false },
+        "style": { "shape": {
+          "fill": { "light": "#E9E9EB", "dark": "#2C2C2E" },
+          "stroke": { "content": { "color": "secondary", "opacity": 0.2 }, "style": { "lineWidth": 0.5 } }
+        } }
+      }
+    },
+    {
+      "component": {
+        "id": "dep_outgoing_bubble",
+        "type": "hstack",
+        "context": { "_spacing": 8, "_alignment": "bottom" },
+        "children": [
+          { "id": "ob_sp", "type": "spacer" },
+          {
+            "id": "ob_col", "type": "vstack", "context": { "_spacing": 2, "_alignment": "trailing" },
+            "children": [
+              { "id": "ob_bubble", "type": "text",
+                "context": { "_text": "@{item.text}" },
+                "style": {
+                  "common": { "font": "body", "foreground": { "color": "white" },
+                    "background": { "type": "template", "id": "ob_bg_tpl", "context": { "_source": "dp://dep_bubble_shape_out" } } },
+                  "layout": { "maxWidth": 260, "padding": { "horizontal": 14, "vertical": 10 } }
+                } },
+              { "id": "ob_time", "type": "text",
+                "context": { "_text": "@{item.created_at}", "_format": { "date": { "style": "custom", "pattern": "d MMM, HH:mm" } } },
+                "style": { "common": { "font": "caption2", "foreground": { "color": "secondary" } }, "layout": { "padding": { "horizontal": 4 } } } }
+            ]
+          },
+          { "id": "ob_avatar", "type": "image",
+            "context": { "_source": "{{ notEmpty(@{item.userAvatar}) ? ('sf://' + @{item.userAvatar}) : 'sf://person.circle.fill' }}" },
+            "style": { "layout": { "width": 44, "height": 44 }, "common": { "foreground": "#007AFF" } } }
+        ]
+      }
+    },
+    {
+      "component": {
+        "id": "dep_incoming_bubble",
+        "type": "hstack",
+        "context": { "_spacing": 8, "_alignment": "bottom" },
+        "children": [
+          { "id": "ib_avatar", "type": "image",
+            "context": { "_source": "{{ notEmpty(@{item.userAvatar}) ? ('sf://' + @{item.userAvatar}) : 'sf://person.circle.fill' }}" },
+            "style": { "layout": { "width": 44, "height": 44 }, "common": { "foreground": "#5AC8FA" } } },
+          {
+            "id": "ib_col", "type": "vstack", "context": { "_spacing": 2, "_alignment": "leading" },
+            "children": [
+              { "id": "ib_name", "type": "text",
+                "context": { "_text": "{{ @{item.userName} ?? 'Unknown' }}" },
+                "style": { "common": { "font": "caption2", "foreground": { "color": "secondary" } }, "layout": { "padding": { "leading": 4 } } } },
+              { "id": "ib_bubble", "type": "text",
+                "context": { "_text": "@{item.text}" },
+                "style": {
+                  "common": { "font": "body", "foreground": { "color": "onsurface" },
+                    "background": { "type": "template", "id": "ib_bg_tpl", "context": { "_source": "dp://dep_bubble_shape_in" } } },
+                  "layout": { "maxWidth": 260, "padding": { "horizontal": 14, "vertical": 10 } }
+                } },
+              { "id": "ib_time", "type": "text",
+                "context": { "_text": "@{item.created_at}", "_format": { "date": { "style": "custom", "pattern": "d MMM, HH:mm" } } },
+                "style": { "common": { "font": "caption2", "foreground": { "color": "secondary" } }, "layout": { "padding": { "horizontal": 4 } } } }
+            ]
+          },
+          { "id": "ib_sp", "type": "spacer" }
+        ]
+      }
+    }
+  ],
+  "children": [
+    {
+      "id": "chat_root",
+      "type": "vstack",
+      "context": { "_spacing": 0 },
+      "style": {
+        "layout": { "maxWidth": "infinity", "maxHeight": "infinity" },
+        "common": {
+          "background": { "color": "background" }
+        },
+        "modal": {
+          "sheet": {
+            "isPresented": "${showSettings}",
+            "content": {
+              "id": "settings_sheet",
+              "type": "vstack",
+              "context": { "_spacing": 16, "_alignment": "leading" },
+              "style": {
+                "layout": { "maxWidth": "infinity", "maxHeight": "infinity", "padding": { "horizontal": 24, "top": 32 } },
+                "common": { "background": { "color": "background" } }
+              },
+              "children": [
+                { "id": "settings_title", "type": "text",
+                  "context": { "_text": "Connect to Firebase" },
+                  "style": { "common": { "font": { "kind": "title", "weight": "bold" } } } },
+                { "id": "settings_subtitle", "type": "text",
+                  "context": { "_text": "Enter your Firebase credentials to enable live chat. Create a project at console.firebase.google.com, add an iOS app, and enable Firestore in test mode. Credentials are stored securely in your device keychain. Alternatively, add GoogleService-Info.plist to the Xcode project — Firebase will auto-configure without manual entry." },
+                  "style": { "layout": { "maxWidth": "infinity" },
+                             "common": { "font": "footnote", "foreground": { "light": "#8E8E8E", "dark": "#A8A8A8" } },
+                             "text": { "lineSpacing": 2 } } },
+                { "id": "project_field", "type": "textfield",
+                  "context": { "_label": "Project ID", "_text": "${projectId}", "_debounce": 0 },
+                  "style": { "layout": { "maxWidth": "infinity" },
+                             "textField": { "standard": "roundedBorder", "autocapitalization": "never", "autocorrectionDisabled": true } } },
+                { "id": "appid_field", "type": "textfield",
+                  "context": { "_label": "Google App ID", "_text": "${googleAppId}", "_debounce": 0 },
+                  "style": { "layout": { "maxWidth": "infinity" },
+                             "textField": { "standard": "roundedBorder", "autocapitalization": "never", "autocorrectionDisabled": true } } },
+                {
+                  "id": "api_row", "type": "hstack",
+                  "style": { "layout": { "maxWidth": "infinity" } },
+                  "children": [
+                    { "id": "api_field", "type": "textfield",
+                      "context": { "_label": "API Key", "_text": "${apiKey}", "_isSecured": "${apiKeySecured}", "_debounce": 0 },
+                      "style": { "layout": { "maxWidth": "infinity" },
+                                 "textField": { "standard": "roundedBorder", "autocapitalization": "never", "autocorrectionDisabled": true } } },
+                    { "id": "eye_btn", "type": "button",
+                      "children": [ { "id": "eye_img", "type": "image", "context": { "_source": "${secureIcon}" }, "style": { "layout": { "width": 20, "height": 20 }, "common": { "foreground": { "light": "#8E8E8E", "dark": "#A8A8A8" } } } } ],
+                      "events": { "onTap": [{ "state": { "id": "toggle_eye", "input": { "apiKeySecured": "{{ !${apiKeySecured} }}" }, "output": { "success": [{ "state": { "id": "update_icon", "input": { "secureIcon": "{{ ${apiKeySecured} ? 'sf://eye.slash' : 'sf://eye' }}" } } }] } } }] } }
+                  ]
+                },
+                { "id": "save_btn", "type": "button",
+                  "context": { "_label": "Save and connect" },
+                  "style": { "button": { "custom": {
+                    "layout": { "maxWidth": "infinity", "minHeight": 48 },
+                    "common": { "foreground": "white", "cornerRadius": 10,
+                                "background": { "gradient": { "linear": { "colors": ["#007AFF", "#0051D4"], "startPoint": "leading", "endPoint": "trailing" } } } }
+                  } } },
+                  "events": { "onTap": [{ "repo": { "id": "save_key", "input": { "repositoryId": "msg_secured", "operation": "create", "params": { "key": "firebase_api_key", "value": "${apiKey}" } }, "output": { "success": [{ "repo": { "id": "save_proj", "input": { "repositoryId": "msg_secured", "operation": "create", "params": { "key": "firebase_project_id", "value": "${projectId}" } }, "output": { "success": [{ "repo": { "id": "save_app", "input": { "repositoryId": "msg_secured", "operation": "create", "params": { "key": "firebase_app_id", "value": "${googleAppId}" } }, "output": { "success": [ { "state": { "id": "saved", "input": { "showSettings": false, "firebaseConfigured": true, "error": "", "isError": false } } }, { "listen": { "id": "listen_after_save", "input": { "dependencyId": "msg_firebase", "state": "messages", "params": { "collection": "messages", "notification": { "service": { "id": "notify_save", "input": { "serviceId": "msg_audio", "params": { "sound": "receivedMessage", "haptic": "light" } } } } } } } } ], "failure": [{ "state": { "id": "e3", "input": { "error": "@{save_app.message}", "isError": true } } }] } } }], "failure": [{ "state": { "id": "e2", "input": { "error": "@{save_proj.message}", "isError": true } } }] } } }], "failure": [{ "state": { "id": "e1", "input": { "error": "@{save_key.message}", "isError": true } } }] } } }] } },
+                { "id": "divider_style", "type": "divider", "style": { "layout": { "padding": { "vertical": 4 } } } },
+                { "id": "style_label", "type": "text",
+                  "context": { "_text": "Bubble style" },
+                  "style": { "common": { "font": { "kind": "headline" } } } },
+                { "id": "style_picker", "type": "picker",
+                  "context": { "_selection": "${bubbleStyle}", "_label": "Bubble style",
+                               "_options": ["rounded", "bubble"] },
+                  "style": { "picker": "segmented", "layout": { "maxWidth": "infinity" } } },
+                { "id": "close_btn", "type": "button",
+                  "context": { "_label": "Close" },
+                  "style": { "button": { "custom": {
+                    "layout": { "maxWidth": "infinity", "minHeight": 44 },
+                    "common": { "foreground": { "light": "#262626", "dark": "#FFFFFF" }, "cornerRadius": 10,
+                                "background": { "light": "#EFEFEF", "dark": "#1A1A1A" } }
+                  } } },
+                  "events": { "onTap": [{ "state": { "id": "close_settings", "input": { "showSettings": false } } }] } },
+                { "id": "err_display", "type": "conditional",
+                  "context": { "_condition": "${isError}", "_trueComponent": { "id": "err_text", "type": "text", "context": { "_text": "${error}" }, "style": { "common": { "font": "caption", "foreground": "#FF3B30" } } }, "_falseComponent": { "id": "err_empty", "type": "empty" } } },
+                { "id": "settings_spacer", "type": "spacer" }
+              ]
+            }
+          }
+        }
+      },
+      "children": [
+        {
+          "id": "chat_header",
+          "type": "hstack",
+          "context": { "_spacing": 0, "_alignment": "center" },
+          "style": { "layout": { "maxWidth": "infinity", "padding": { "horizontal": 16, "vertical": 12 } } },
+          "children": [
+            { "id": "chat_title", "type": "text", "context": { "_text": "Messenger" },
+              "style": { "common": { "font": { "kind": "title2", "weight": "bold" } } } },
+            { "id": "chat_sp", "type": "spacer" },
+            {
+              "id": "gear_btn", "type": "button",
+              "style": { "button": { "custom": {
+                "layout": { "width": 36, "height": 36 },
+                "common": { "cornerRadius": 18, "background": { "light": "#EFEFEF", "dark": "#1A1A1A" } }
+              } } },
+              "children": [
+                { "id": "gear_icon", "type": "image", "context": { "_source": "sf://gearshape" },
+                  "style": { "layout": { "width": 16, "height": 16 }, "common": { "foreground": { "light": "#262626", "dark": "#FFFFFF" } } } }
+              ],
+              "events": { "onTap": [{ "state": { "id": "open_settings", "input": { "showSettings": true } } }] }
+            },
+            { "id": "header_gap", "type": "spacer", "style": { "layout": { "width": 10 } } },
+            {
+              "id": "msg_close_btn", "type": "button",
+              "style": { "button": { "custom": {
+                "layout": { "width": 36, "height": 36 },
+                "common": { "cornerRadius": 18, "background": { "light": "#EFEFEF", "dark": "#2C2C2E" } }
+              } } },
+              "children": [
+                { "id": "msg_close_icon", "type": "image", "context": { "_source": "sf://xmark" },
+                  "style": { "layout": { "width": 12, "height": 12 },
+                             "common": { "foreground": { "light": "#262626", "dark": "#FFFFFF" },
+                                         "font": { "kind": "caption", "weight": "bold" } } } }
+              ],
+              "events": { "onTap": [{ "state": { "id": "msg_close_action", "input": { "onClose": true } } }] }
+            }
+          ]
+        },
+        { "id": "header_divider", "type": "divider" },
+        {
+          "id": "setup_banner", "type": "conditional",
+          "context": {
+            "_condition": "{{ !${firebaseConfigured} }}",
+            "_trueComponent": {
+              "id": "banner_content", "type": "hstack", "context": { "_spacing": 12, "_alignment": "center" },
+              "style": {
+                "layout": { "maxWidth": "infinity", "padding": { "horizontal": 14, "vertical": 12 } },
+                "common": { "background": { "light": "#FFF4E5", "dark": "#2A1F0F" },
+                             "opacity": "{{ ${firebaseConfigured} ? 0 : 1 }}" },
+                "animation": { "kind": "easeOut", "value": "${firebaseConfigured}", "duration": 0.4 }
+              },
+              "children": [
+                { "id": "banner_ic", "type": "image", "context": { "_source": "sf://sparkles" }, "style": { "layout": { "width": 24, "height": 24 }, "common": { "foreground": "#FF9F0A" } } },
+                { "id": "banner_col", "type": "vstack", "context": { "_spacing": 2, "_alignment": "leading" }, "style": { "layout": { "maxWidth": "infinity" } },
+                  "children": [
+                    { "id": "banner_title", "type": "text", "context": { "_text": "Not connected" }, "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+                    { "id": "banner_hint", "type": "text", "context": { "_text": "Tap the gear icon to enter Firebase credentials." }, "style": { "common": { "font": "caption", "foreground": { "light": "#8E8E8E", "dark": "#A8A8A8" } } } }
+                  ]
+                },
+                { "id": "banner_sp", "type": "spacer" }
+              ]
+            },
+            "_falseComponent": { "id": "no_banner", "type": "empty" }
+          }
+        },
+        {
+          "id": "chat_scroll",
+          "type": "scroll",
+          "context": { "_axis": "vertical", "_scrollTrigger": "{{ count(${messages}) }}" },
+          "style": { "layout": { "maxWidth": "infinity", "maxHeight": "infinity" }, "scroll": { "bounce": true, "anchor": "bottom" } },
+          "children": [
+            {
+              "id": "chat_msgs",
+              "type": "vstack",
+              "context": { "_spacing": 10 },
+              "style": { "layout": { "padding": 12 } },
+              "children": [
+                {
+                  "id": "empty_state", "type": "conditional",
+                  "context": {
+                    "_condition": "{{ empty(${messages}) && ${firebaseConfigured} }}",
+                    "_trueComponent": {
+                      "id": "empty_view", "type": "vstack", "context": { "_spacing": 12 },
+                      "style": { "layout": { "maxWidth": "infinity", "padding": { "top": 80 } } },
+                      "children": [
+                        { "id": "empty_icon", "type": "image", "context": { "_source": "sf://bubble.left.and.bubble.right" },
+                          "style": { "layout": { "width": 56, "height": 56 },
+                                     "common": { "foreground": { "color": "secondary" }, "scale": "${iconScale}" },
+                                     "animation": { "kind": "spring", "value": "${iconScale}", "duration": 1.2, "bounce": 0.5 } } },
+                        { "id": "empty_text", "type": "text", "context": { "_text": "No messages yet" }, "style": { "common": { "font": "title3", "foreground": { "color": "secondary" } } } },
+                        { "id": "empty_hint", "type": "text", "context": { "_text": "Say hello! 👋" }, "style": { "common": { "font": "subheadline", "foreground": { "color": "secondary" } } } }
+                      ]
+                    },
+                    "_falseComponent": { "id": "no_empty", "type": "empty" }
+                  }
+                },
+                {
+                  "id": "msg_dynamic",
+                  "type": "dynamic",
+                  "context": { "_data": "${messages}" },
+                  "prototype": {
+                    "id": "msg_row", "type": "conditional",
+                    "context": {
+                      "_condition": "{{ @{item.user} == #{user} }}",
+                      "_trueComponent": {
+                        "id": "out_style_switch", "type": "conditional",
+                        "context": {
+                          "_condition": "{{ ${bubbleStyle} == 'bubble' }}",
+                          "_trueComponent":  { "id": "out_tpl_b", "type": "template", "context": { "_source": "dp://dep_outgoing_bubble" } },
+                          "_falseComponent": { "id": "out_tpl_r", "type": "template", "context": { "_source": "dp://dep_outgoing" } }
+                        }
+                      },
+                      "_falseComponent": {
+                        "id": "in_style_switch", "type": "conditional",
+                        "context": {
+                          "_condition": "{{ ${bubbleStyle} == 'bubble' }}",
+                          "_trueComponent":  { "id": "in_tpl_b", "type": "template", "context": { "_source": "dp://dep_incoming_bubble" } },
+                          "_falseComponent": { "id": "in_tpl_r", "type": "template", "context": { "_source": "dp://dep_incoming" } }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        { "id": "input_divider", "type": "divider" },
+        {
+          "id": "chat_input_bar",
+          "type": "hstack",
+          "context": { "_spacing": 10 },
+          "style": { "layout": { "maxWidth": "infinity", "padding": { "horizontal": 12, "vertical": 10 } } },
+          "children": [
+            {
+              "id": "msg_field", "type": "textfield",
+              "context": { "_label": "Type a message...", "_text": "${message}" },
+              "style": { "textField": { "standard": "roundedBorder" }, "layout": { "maxWidth": "infinity", "minHeight": 40 }, "common": { "cornerRadius": 20 } }
+            },
+            {
+              "id": "send_btn", "type": "button", "context": { "_label": "" },
+              "style": { "button": { "custom": { "layout": { "width": 40, "height": 40 }, "common": { "background": { "gradient": { "linear": { "colors": ["#007AFF", "#0051D4"], "startPoint": "topLeading", "endPoint": "bottomTrailing" } } }, "cornerRadius": 20, "foreground": { "color": "white" }, "scale": "{{ notEmpty(${message}) ? 1.0 : 0.85 }}", "opacity": "{{ notEmpty(${message}) ? 1.0 : 0.4 }}" }, "animation": { "kind": "spring", "value": "${message}", "duration": 0.3, "bounce": 0.4 } } } },
+              "children": [ { "id": "send_icon", "type": "image", "context": { "_source": "sf://arrow.up" }, "style": { "layout": { "width": 18, "height": 18 }, "common": { "foreground": { "color": "white" } } } } ],
+              "events": {
+                "onTap": [{
+                  "condition": {
+                    "id": "guard_empty",
+                    "input": "{{ ${message} != '' }}",
+                    "output": {
+                      "success": [{
+                        "state": {
+                          "id": "prepare_msg",
+                          "input": { "tmpMessage": { "text": "${message}", "created_at": "#{now}", "user": "#{user}", "userName": "${userName}", "userAvatar": "${userAvatar}" } },
+                          "output": {
+                            "success": [
+                              {
+                                "state": {
+                                  "id": "append_msg",
+                                  "input": { "messages": "{{ ${messages} + [${tmpMessage}] }}", "message": "" },
+                                  "output": {
+                                    "success": [{
+                                      "repo": {
+                                        "id": "send_repo",
+                                        "input": { "repositoryId": "msg_firebase", "operation": "create", "params": { "collection": "messages", "body": "${tmpMessage}" } },
+                                        "output": {
+                                          "success": [{ "state": { "id": "send_ok", "input": { "error": "", "isError": false } } }],
+                                          "failure": [{ "state": { "id": "send_err", "input": { "error": "@{send_repo.message}", "isError": true } } }]
+                                        }
+                                      }
+                                    }]
+                                  }
+                                }
+                              },
+                              { "service": { "id": "play_sound", "input": { "serviceId": "msg_audio", "params": { "sound": "sentMessage", "haptic": "light" } } } }
+                            ]
+                          }
+                        }
+                      }]
+                    }
+                  }
+                }]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "events": {
+    "onCustom": {
+      "name": "firebaseReady",
+      "actions": [
+        { "state": { "id": "plist_configured", "input": { "firebaseConfigured": true } } }
+      ]
+    },
+    "onAppear": [
+      {
+        "repo": {
+          "id": "load_api_key",
+          "input": { "repositoryId": "msg_secured", "operation": "read", "params": "firebase_api_key" },
+          "output": {
+            "success": [{
+              "state": { "id": "loaded_key", "input": { "apiKey": "@{load_api_key}" }, "output": { "success": [{
+                "repo": { "id": "load_project_id", "input": { "repositoryId": "msg_secured", "operation": "read", "params": "firebase_project_id" }, "output": { "success": [{
+                  "state": { "id": "loaded_project", "input": { "projectId": "@{load_project_id}" }, "output": { "success": [{
+                    "repo": { "id": "load_app_id", "input": { "repositoryId": "msg_secured", "operation": "read", "params": "firebase_app_id" }, "output": { "success": [{
+                      "state": { "id": "loaded_appid", "input": { "googleAppId": "@{load_app_id}" }, "output": { "success": [{
+                        "condition": { "id": "check_loaded", "input": "{{ ${apiKey} != '' && ${projectId} != '' && ${googleAppId} != '' }}", "output": { "success": [
+                          { "state": { "id": "mark_configured", "input": { "firebaseConfigured": true } } },
+                          { "listen": { "id": "listen_on_load", "input": { "dependencyId": "msg_firebase", "state": "messages", "params": { "collection": "messages", "notification": { "service": { "id": "notify_load", "input": { "serviceId": "msg_audio", "params": { "sound": "receivedMessage", "haptic": "light" } } } } } } } }
+                        ] } }
+                      }] } }
+                    }] } }
+                  }] } }
+                }] } }
+              }] } }
+            }]
+          }
+        }
+      },
+      {
+        "listen": {
+          "id": "listen_eager",
+          "input": {
+            "dependencyId": "msg_firebase",
+            "state": "messages",
+            "params": {
+              "collection": "messages",
+              "notification": {
+                "service": {
+                  "id": "notify_eager",
+                  "input": { "serviceId": "msg_audio", "params": { "sound": "receivedMessage", "haptic": "light" } }
+                }
+              }
+            }
+          },
+          "output": {
+            "success": [{ "state": { "id": "listen_ok", "input": { "firebaseConfigured": true } } }]
+          }
+        }
+      },
+      { "state": { "id": "reset_close", "input": { "onClose": false } } },
+      { "state": { "id": "animate_icon", "input": { "iconScale": 1.0 } } }
+    ]
+  }
+}

@@ -1,0 +1,404 @@
+{
+  "id": "functions_playground",
+  "type": "module",
+  "context": { "_title": "Functions", "_icon": "function" },
+  "state": {
+    "onClose": false,
+
+    "strText":    "Hello, World!",
+    "padded":     "  spaces around me  ",
+
+    "matchText":  "Hello, World!",
+    "search":     "World",
+
+    "inspectText": "Hello, World!",
+    "numbers":    [8, 3, 1, 5, 2, 9, 4],
+
+    "people": [
+      { "name": "Alice", "age": 30 },
+      { "name": "Bob",   "age": 22 },
+      { "name": "Carol", "age": 45 },
+      { "name": "Dan",   "age": 18 }
+    ],
+
+    "jsonInput":  "{\"name\":\"Alice\",\"age\":30,\"tags\":[\"vip\",\"beta\"]}",
+
+    "intString":  "42",
+    "boolString": "true",
+
+    "pipeText":   "Hello, World!"
+  },
+
+  "dependencies": [
+    {
+      "component": {
+        "id": "dep_fn_row", "type": "vstack",
+        "context": { "_spacing": 2, "code": "", "value": "" },
+        "style": { "layout": { "maxWidth": "infinity", "padding": { "vertical": 6 } } },
+        "children": [
+          { "id": "dep_fn_row_code", "type": "text",
+            "context": { "_text": "@{code}" },
+            "style": { "common": { "font": { "kind": "caption", "design": "monospaced" },
+                                   "foreground": { "light": "#8E8E93", "dark": "#AEAEB2" } } } },
+          { "id": "dep_fn_row_value", "type": "text",
+            "context": { "_text": "@{value}" },
+            "style": { "common": { "font": { "kind": "system", "size": 15, "design": "monospaced" },
+                                   "foreground": { "light": "#000000", "dark": "#FFFFFF" } } } }
+        ]
+      }
+    },
+    {
+      "component": {
+        "id": "dep_fn_card", "type": "vstack",
+        "context": { "_spacing": 10, "title": "", "hint": "" },
+        "style": { "layout": { "maxWidth": "infinity", "padding": 16 },
+                   "common": { "background": { "light": "#FFFFFF", "dark": "#1C1C1E" }, "cornerRadius": 14 } }
+      }
+    }
+  ],
+
+  "children": [
+    { "id": "fn_root", "type": "vstack",
+      "context": { "_spacing": 0 },
+      "style": { "layout": { "maxWidth": "infinity", "maxHeight": "infinity" },
+                 "common": { "background": { "light": "#F2F2F7", "dark": "#000000" } } },
+      "children": [
+
+        { "id": "fn_head", "type": "hstack",
+          "context": { "_alignment": "center" },
+          "style": { "layout": { "maxWidth": "infinity", "padding": { "horizontal": 16, "top": 16, "bottom": 8 } } },
+          "children": [
+            { "id": "fn_title", "type": "text",
+              "context": { "_text": "Built-in functions" },
+              "style": { "common": { "font": { "kind": "system", "size": 26, "weight": "bold", "design": "rounded" } } } },
+            { "id": "fn_sp", "type": "spacer" },
+            { "id": "fn_close", "type": "button",
+              "style": { "button": { "custom": {
+                "layout": { "width": 36, "height": 36 },
+                "common": { "cornerRadius": 18, "background": { "light": "#EFEFEF", "dark": "#2C2C2E" } }
+              } } },
+              "children": [
+                { "id": "fn_close_icon", "type": "image", "context": { "_source": "sf://xmark" },
+                  "style": { "layout": { "width": 12, "height": 12 },
+                             "common": { "foreground": { "light": "#262626", "dark": "#FFFFFF" },
+                                         "font": { "kind": "caption", "weight": "bold" } } } }
+              ],
+              "events": { "onTap": [{ "state": { "id": "fn_close_act", "input": { "onClose": true } } }] } }
+          ]
+        },
+
+        { "id": "fn_body", "type": "scroll",
+          "style": { "scroll": { "dismissesKeyboard": "immediately" } },
+          "children": [
+            { "id": "fn_stack", "type": "vstack",
+              "context": { "_spacing": 16 },
+              "style": { "layout": { "padding": { "horizontal": 16, "bottom": 32 } } },
+              "children": [
+
+                { "id": "fn_intro", "type": "text",
+                  "context": { "_text": "A live reference for every built-in function in the StemJSON expression language (spec §8.6). Each card is self-contained: its own inputs at the top, the function applied on the rows below. The top line of every row is the expression; the line below is its evaluated result." },
+                  "style": { "common": { "font": "footnote", "foreground": { "light": "#3C3C43", "dark": "#EBEBF5" } } } },
+
+
+                { "id": "card_strings", "type": "vstack",
+                  "context": { "_spacing": 10 },
+                  "style": { "layout": { "maxWidth": "infinity", "padding": 16 },
+                             "common": { "background": { "light": "#FFFFFF", "dark": "#1C1C1E" }, "cornerRadius": 14 } },
+                  "children": [
+                    { "id": "s_h", "type": "text",
+                      "context": { "_text": "Strings" },
+                      "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+                    { "id": "s_hint", "type": "text",
+                      "context": { "_text": "Transform a string. Edit the text below to see every function update." },
+                      "style": { "common": { "font": "caption", "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                    { "id": "s_lbl_text", "type": "text",
+                      "context": { "_text": "Text" },
+                      "style": { "common": { "font": { "kind": "caption", "weight": "semibold" },
+                                             "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                    { "id": "s_in_text", "type": "textfield",
+                      "context": { "_label": "text", "_text": "${strText}", "_debounce": 0 } },
+
+                    { "id": "row_upper", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "upper(${strText})",
+                                   "value": "{{ upper(${strText}) }}" } },
+                    { "id": "row_lower", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "lower(${strText})",
+                                   "value": "{{ lower(${strText}) }}" } },
+                    { "id": "row_replace", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "replace(${strText}, 'World', 'Universe')",
+                                   "value": "{{ replace(${strText}, 'World', 'Universe') }}" } },
+                    { "id": "row_prefix", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "prefix(${strText}, 5)",
+                                   "value": "{{ prefix(${strText}, 5) }}" } },
+                    { "id": "row_suffix", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "suffix(${strText}, 5)",
+                                   "value": "{{ suffix(${strText}, 5) }}" } },
+
+                    { "id": "s_lbl_padded", "type": "text",
+                      "context": { "_text": "trim() removes leading/trailing whitespace. Input below starts and ends with spaces." },
+                      "style": { "layout": { "padding": { "top": 6 } },
+                                 "common": { "font": "caption", "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                    { "id": "s_in_padded", "type": "textfield",
+                      "context": { "_label": "padded", "_text": "${padded}", "_debounce": 0 } },
+                    { "id": "row_trim", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "trim(${padded})",
+                                   "value": "{{ trim(${padded}) }}" } }
+                  ]
+                },
+
+
+                { "id": "card_matching", "type": "vstack",
+                  "context": { "_spacing": 10 },
+                  "style": { "layout": { "maxWidth": "infinity", "padding": 16 },
+                             "common": { "background": { "light": "#FFFFFF", "dark": "#1C1C1E" }, "cornerRadius": 14 } },
+                  "children": [
+                    { "id": "m_h", "type": "text",
+                      "context": { "_text": "Matching" },
+                      "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+                    { "id": "m_hint", "type": "text",
+                      "context": { "_text": "Does a search word appear in a text? Try changing the search to 'Hello' or 'xyz'." },
+                      "style": { "common": { "font": "caption", "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                    { "id": "m_lbl_text", "type": "text",
+                      "context": { "_text": "Text" },
+                      "style": { "common": { "font": { "kind": "caption", "weight": "semibold" },
+                                             "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                    { "id": "m_in_text", "type": "textfield",
+                      "context": { "_label": "text", "_text": "${matchText}", "_debounce": 0 } },
+                    { "id": "m_lbl_search", "type": "text",
+                      "context": { "_text": "Search word" },
+                      "style": { "common": { "font": { "kind": "caption", "weight": "semibold" },
+                                             "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                    { "id": "m_in_search", "type": "textfield",
+                      "context": { "_label": "search", "_text": "${search}", "_debounce": 0 } },
+
+                    { "id": "row_hasPrefix", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "hasPrefix(${matchText}, ${search})",
+                                   "value": "{{ hasPrefix(${matchText}, ${search}) }}" } },
+                    { "id": "row_hasSuffix", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "hasSuffix(${matchText}, ${search})",
+                                   "value": "{{ hasSuffix(${matchText}, ${search}) }}" } },
+                    { "id": "row_contains", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "contains(${matchText}, ${search})",
+                                   "value": "{{ contains(${matchText}, ${search}) }}" } }
+                  ]
+                },
+
+
+                { "id": "card_inspection", "type": "vstack",
+                  "context": { "_spacing": 10 },
+                  "style": { "layout": { "maxWidth": "infinity", "padding": 16 },
+                             "common": { "background": { "light": "#FFFFFF", "dark": "#1C1C1E" }, "cornerRadius": 14 } },
+                  "children": [
+                    { "id": "i_h", "type": "text",
+                      "context": { "_text": "Inspection" },
+                      "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+                    { "id": "i_hint", "type": "text",
+                      "context": { "_text": "Size and emptiness queries. These functions are polymorphic — they work on strings, arrays, and dictionaries alike." },
+                      "style": { "common": { "font": "caption", "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                    { "id": "i_lbl_text", "type": "text",
+                      "context": { "_text": "A string (clear it to see empty() flip)" },
+                      "style": { "common": { "font": { "kind": "caption", "weight": "semibold" },
+                                             "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                    { "id": "i_in_text", "type": "textfield",
+                      "context": { "_label": "text", "_text": "${inspectText}", "_debounce": 0 } },
+                    { "id": "i_arr", "type": "text",
+                      "context": { "_text": "An array of numbers — numbers = [8, 3, 1, 5, 2, 9, 4]" },
+                      "style": { "layout": { "padding": { "top": 4 } },
+                                 "common": { "font": { "kind": "caption", "design": "monospaced" },
+                                             "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+
+                    { "id": "row_count_str", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "count(${inspectText})  — characters in a string",
+                                   "value": "{{ count(${inspectText}) }}" } },
+                    { "id": "row_count_arr", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "count(${numbers})  — elements in an array",
+                                   "value": "{{ count(${numbers}) }}" } },
+                    { "id": "row_length", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "length(${numbers})  — alias of count",
+                                   "value": "{{ length(${numbers}) }}" } },
+                    { "id": "row_empty", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "empty(${inspectText})",
+                                   "value": "{{ empty(${inspectText}) }}" } },
+                    { "id": "row_notEmpty", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "notEmpty(${inspectText})",
+                                   "value": "{{ notEmpty(${inspectText}) }}" } }
+                  ]
+                },
+
+
+                { "id": "card_collections", "type": "vstack",
+                  "context": { "_spacing": 10 },
+                  "style": { "layout": { "maxWidth": "infinity", "padding": 16 },
+                             "common": { "background": { "light": "#FFFFFF", "dark": "#1C1C1E" }, "cornerRadius": 14 } },
+                  "children": [
+                    { "id": "c_h", "type": "text",
+                      "context": { "_text": "Sorting & aggregation" },
+                      "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+                    { "id": "c_hint", "type": "text",
+                      "context": { "_text": "Functions that operate on arrays of numbers." },
+                      "style": { "common": { "font": "caption", "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                    { "id": "c_arr", "type": "text",
+                      "context": { "_text": "numbers = [8, 3, 1, 5, 2, 9, 4]" },
+                      "style": { "common": { "font": { "kind": "caption", "design": "monospaced" },
+                                             "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+
+                    { "id": "row_sort_asc", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "sort(${numbers})",
+                                   "value": "{{ sort(${numbers}) }}" } },
+                    { "id": "row_sort_desc", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "sort(${numbers}, 'desc')",
+                                   "value": "{{ sort(${numbers}, 'desc') }}" } },
+                    { "id": "row_first", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "first(${numbers})",
+                                   "value": "{{ first(${numbers}) }}" } },
+                    { "id": "row_last", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "last(${numbers})",
+                                   "value": "{{ last(${numbers}) }}" } },
+                    { "id": "row_min", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "min(${numbers})",
+                                   "value": "{{ min(${numbers}) }}" } },
+                    { "id": "row_max", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "max(${numbers})",
+                                   "value": "{{ max(${numbers}) }}" } },
+                    { "id": "row_sum", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "sum(${numbers})",
+                                   "value": "{{ sum(${numbers}) }}" } }
+                  ]
+                },
+
+
+                { "id": "card_map", "type": "vstack",
+                  "context": { "_spacing": 10 },
+                  "style": { "layout": { "maxWidth": "infinity", "padding": 16 },
+                             "common": { "background": { "light": "#FFFFFF", "dark": "#1C1C1E" }, "cornerRadius": 14 } },
+                  "children": [
+                    { "id": "mp_h", "type": "text",
+                      "context": { "_text": "map() — reshape every element" },
+                      "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+                    { "id": "mp_hint", "type": "text",
+                      "context": { "_text": "The template after the array is evaluated once per item. Inside it, @{item} is the current element and @{index} is its position. Combine with sort(arr, 'key') to sort by a field first." },
+                      "style": { "common": { "font": "caption", "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                    { "id": "mp_arr", "type": "text",
+                      "context": { "_text": "people = [{name: 'Alice', age: 30}, {name: 'Bob', age: 22}, {name: 'Carol', age: 45}, {name: 'Dan', age: 18}]" },
+                      "style": { "common": { "font": { "kind": "caption", "design": "monospaced" },
+                                             "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                    { "id": "mp_code", "type": "text",
+                      "context": { "_text": "map(sort(${people}, 'age'), @{item.name} + ' · ' + @{item.age})" },
+                      "style": { "layout": { "padding": { "top": 4 } },
+                                 "common": { "font": { "kind": "caption", "design": "monospaced" },
+                                             "foreground": { "light": "#8E8E93", "dark": "#AEAEB2" } } } },
+                    { "id": "mp_result", "type": "dynamic",
+                      "context": { "_data": "{{ map(sort(${people}, 'age'), @{item.name} + ' · ' + @{item.age}) }}" },
+                      "prototype": { "id": "mp_row", "type": "text",
+                        "context": { "_text": "@{item}" },
+                        "style": { "common": { "font": { "kind": "system", "size": 15, "design": "monospaced" } } } } }
+                  ]
+                },
+
+
+                { "id": "card_parsing", "type": "vstack",
+                  "context": { "_spacing": 10 },
+                  "style": { "layout": { "maxWidth": "infinity", "padding": 16 },
+                             "common": { "background": { "light": "#FFFFFF", "dark": "#1C1C1E" }, "cornerRadius": 14 } },
+                  "children": [
+                    { "id": "p_h", "type": "text",
+                      "context": { "_text": "strtojson() — parse a JSON string" },
+                      "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+                    { "id": "p_hint", "type": "text",
+                      "context": { "_text": "Turns a JSON-encoded string into a structured value you can reach into with dot access. Returns null if parsing fails." },
+                      "style": { "common": { "font": "caption", "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                    { "id": "p_lbl", "type": "text",
+                      "context": { "_text": "JSON string" },
+                      "style": { "common": { "font": { "kind": "caption", "weight": "semibold" },
+                                             "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                    { "id": "p_in", "type": "textfield",
+                      "context": { "_label": "json", "_text": "${jsonInput}", "_debounce": 0 } },
+
+                    { "id": "row_parse_name", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "strtojson(${jsonInput}).name",
+                                   "value": "{{ strtojson(${jsonInput}).name }}" } },
+                    { "id": "row_parse_age", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "strtojson(${jsonInput}).age",
+                                   "value": "{{ strtojson(${jsonInput}).age }}" } },
+                    { "id": "row_parse_tags", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "strtojson(${jsonInput}).tags",
+                                   "value": "{{ strtojson(${jsonInput}).tags }}" } }
+                  ]
+                },
+
+
+                { "id": "card_casting", "type": "vstack",
+                  "context": { "_spacing": 10 },
+                  "style": { "layout": { "maxWidth": "infinity", "padding": 16 },
+                             "common": { "background": { "light": "#FFFFFF", "dark": "#1C1C1E" }, "cornerRadius": 14 } },
+                  "children": [
+                    { "id": "ca_h", "type": "text",
+                      "context": { "_text": "cast() — convert between types" },
+                      "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+                    { "id": "ca_hint", "type": "text",
+                      "context": { "_text": "Textfields store their value as a string. Use cast() to convert it before arithmetic or boolean logic." },
+                      "style": { "common": { "font": "caption", "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                    { "id": "ca_lbl1", "type": "text",
+                      "context": { "_text": "A numeric string" },
+                      "style": { "common": { "font": { "kind": "caption", "weight": "semibold" },
+                                             "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                    { "id": "ca_in1", "type": "textfield",
+                      "context": { "_label": "intString", "_text": "${intString}", "_debounce": 0, "_keyboard": "decimalPad" } },
+
+                    { "id": "row_cast_int", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "cast(${intString}, 'int')",
+                                   "value": "{{ cast(${intString}, 'int') }}" } },
+                    { "id": "row_cast_double", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "cast(${intString}, 'double')",
+                                   "value": "{{ cast(${intString}, 'double') }}" } },
+
+                    { "id": "ca_lbl2", "type": "text",
+                      "context": { "_text": "A boolean-like string — try 'true' vs 'false'" },
+                      "style": { "layout": { "padding": { "top": 6 } },
+                                 "common": { "font": { "kind": "caption", "weight": "semibold" },
+                                             "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                    { "id": "ca_in2", "type": "textfield",
+                      "context": { "_label": "boolString", "_text": "${boolString}", "_debounce": 0 } },
+
+                    { "id": "row_cast_bool", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "cast(${boolString}, 'bool')",
+                                   "value": "{{ cast(${boolString}, 'bool') }}" } }
+                  ]
+                },
+
+
+                { "id": "card_pipe", "type": "vstack",
+                  "context": { "_spacing": 10 },
+                  "style": { "layout": { "maxWidth": "infinity", "padding": 16 },
+                             "common": { "background": { "light": "#FFFFFF", "dark": "#1C1C1E" }, "cornerRadius": 14 } },
+                  "children": [
+                    { "id": "pi_h", "type": "text",
+                      "context": { "_text": "|> — pipe operator" },
+                      "style": { "common": { "font": { "kind": "subheadline", "weight": "semibold" } } } },
+                    { "id": "pi_hint", "type": "text",
+                      "context": { "_text": "Chains function calls left-to-right. x |> f() is equivalent to f(x); x |> f() |> g() is g(f(x)). Keeps long transformations readable." },
+                      "style": { "common": { "font": "caption", "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                    { "id": "pi_lbl", "type": "text",
+                      "context": { "_text": "Text" },
+                      "style": { "common": { "font": { "kind": "caption", "weight": "semibold" },
+                                             "foreground": { "light": "#8E8E93", "dark": "#8E8E93" } } } },
+                    { "id": "pi_in", "type": "textfield",
+                      "context": { "_label": "text", "_text": "${pipeText}", "_debounce": 0 } },
+
+                    { "id": "row_pipe_one", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "${pipeText} |> upper()",
+                                   "value": "{{ ${pipeText} |> upper() }}" } },
+                    { "id": "row_pipe_two", "type": "template",
+                      "context": { "_source": "dp://dep_fn_row", "code": "${pipeText} |> upper() |> prefix(5)",
+                                   "value": "{{ ${pipeText} |> upper() |> prefix(5) }}" } }
+                  ]
+                }
+
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
