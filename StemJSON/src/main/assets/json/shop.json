@@ -211,55 +211,45 @@
               {
                 "state": {
                   "id": "ds_set_remote_data",
-                  "input": { "web": "@{ds_refresh_action.products}", "isLoading": false, "isError": false },
+                  "input": { "web": "@{ds_refresh_action.products}", "isLoading": false, "isError": false, "statusMessage": "Saving to local storage…", "statusIcon": "sf://arrow.down.circle", "showStatus": true },
                   "output": {
                     "success": [
                       {
-                        "state": {
-                          "id": "ds_show_saving",
-                          "input": { "statusMessage": "Saving to local storage…", "statusIcon": "sf://arrow.down.circle", "showStatus": true, "isError": false },
+                        "repo": {
+                          "id": "ds_persist_local",
+                          "input": {
+                            "repositoryId": "ds_local",
+                            "operation": "create",
+                            "params": { "collection": "products", "documentId": "web_id", "body": { "data": "${web}" }, "rewrite": true }
+                          },
                           "output": {
                             "success": [
                               {
-                                "repo": {
-                                  "id": "ds_persist_local",
-                                  "input": {
-                                    "repositoryId": "ds_local",
-                                    "operation": "create",
-                                    "params": { "collection": "products", "documentId": "web_id", "body": { "data": "${web}" }, "rewrite": true }
-                                  },
+                                "state": {
+                                  "id": "ds_saved_ok",
+                                  "input": { "statusMessage": "Saved to local storage", "statusIcon": "sf://checkmark.circle.fill", "showStatus": true, "isError": false },
                                   "output": {
                                     "success": [
-                                      {
-                                        "state": {
-                                          "id": "ds_saved_ok",
-                                          "input": { "statusMessage": "Saved to local storage", "statusIcon": "sf://checkmark.circle.fill", "showStatus": true, "isError": false },
-                                          "output": {
-                                            "success": [
-                                              { "interval": { "id": "ds_toast_timer", "input": { "delay": 3.0 }, "output": { "success": [
-                                                { "state": { "id": "ds_hide_toast", "input": { "showStatus": false } } },
-                                                { "interval": { "id": "ds_toast_timer", "input": { "cancel": true } } }
-                                              ] } } }
-                                            ]
-                                          }
-                                        }
-                                      }
-                                    ],
-                                    "failure": [
-                                      {
-                                        "state": {
-                                          "id": "ds_save_fail",
-                                          "input": { "statusMessage": "@{ds_persist_local.message}", "statusIcon": "sf://xmark.circle.fill", "showStatus": true, "isError": true },
-                                          "output": {
-                                            "success": [
-                                              { "interval": { "id": "ds_toast_timer_err", "input": { "delay": 3.0 }, "output": { "success": [
-                                                { "state": { "id": "ds_hide_toast_err", "input": { "showStatus": false } } },
-                                                { "interval": { "id": "ds_toast_timer_err", "input": { "cancel": true } } }
-                                              ] } } }
-                                            ]
-                                          }
-                                        }
-                                      }
+                                      { "interval": { "id": "ds_toast_timer", "input": { "delay": 3.0 }, "output": { "success": [
+                                        { "state": { "id": "ds_hide_toast", "input": { "showStatus": false } } },
+                                        { "interval": { "id": "ds_toast_timer", "input": { "cancel": true } } }
+                                      ] } } }
+                                    ]
+                                  }
+                                }
+                              }
+                            ],
+                            "failure": [
+                              {
+                                "state": {
+                                  "id": "ds_save_fail",
+                                  "input": { "statusMessage": "@{ds_persist_local.message}", "statusIcon": "sf://xmark.circle.fill", "showStatus": true, "isError": true },
+                                  "output": {
+                                    "success": [
+                                      { "interval": { "id": "ds_toast_timer_err", "input": { "delay": 3.0 }, "output": { "success": [
+                                        { "state": { "id": "ds_hide_toast_err", "input": { "showStatus": false } } },
+                                        { "interval": { "id": "ds_toast_timer_err", "input": { "cancel": true } } }
+                                      ] } } }
                                     ]
                                   }
                                 }
@@ -385,9 +375,8 @@
                               "onTap": [
                                 {
                                   "state": {
-                                    "id": "ds_set_delete_id",
-                                    "input": { "deletedId": "@{item.id}" },
-                                    "output": { "success": [{ "state": { "id": "ds_remove_item", "input": { "web": "${web[id != ${deletedId}]}" } } }] }
+                                    "id": "ds_remove_item",
+                                    "input": { "deletedId": "@{item.id}", "web": "{{ ${web} - @{item} }}" }
                                   }
                                 }
                               ]

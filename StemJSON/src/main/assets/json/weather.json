@@ -479,12 +479,7 @@
                               {
                                 "state": {
                                   "id": "weather_data_update",
-                                  "input": { "weather": "@{weather_fetch_action}" },
-                                  "output": {
-                                    "success": [
-                                      { "state": { "id": "weather_icon_bounce", "input": { "iconScale": 1.25 } } }
-                                    ]
-                                  }
+                                  "input": { "weather": "@{weather_fetch_action}", "iconScale": 1.25 }
                                 }
                               }
                             ],

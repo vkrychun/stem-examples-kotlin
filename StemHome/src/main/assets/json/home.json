@@ -25,6 +25,19 @@
     "onClose":     false
   },
   "events": {
+    "onChange": {
+      "observed": "targetTime",
+      "actions": [
+        { "state": {
+            "id": "apply_target_toggle",
+            "input": {
+              "devices": "{{ map(${devices}, { 'id': @{item.id}, 'name': @{item.name}, 'room': @{item.room}, 'kind': @{item.kind}, 'icon': @{item.icon}, 'on': @{item.id} == ${targetId} ? ${targetOn} : @{item.on} }) }}",
+              "activeCount": "{{ sum(map(${devices}, @{item.id} == ${targetId} ? (${targetOn} ? 1 : 0) : (@{item.on} ? 1 : 0))) }}",
+              "recentEvents": "{{ [ { 'id': cast(${targetTime}, 'string'), 'deviceName': ${targetName}, 'action': ${targetOn} ? 'on' : 'off', 'timestamp': ${targetTime} } ] + ${recentEvents} }}"
+            }
+        } }
+      ]
+    },
     "onCustom": {
       "name": "deviceToggled",
       "actions": [
@@ -131,7 +144,7 @@
                       { "id": "dr1_sp", "type": "spacer" },
                       { "id": "dr1_btn", "type": "button", "context": { "_label": "{{ @{item.on} ? 'Off' : 'On' }}" },
                         "style": { "button": { "custom": { "layout": { "minHeight": 32, "minWidth": 56, "padding": { "horizontal": 12 } }, "common": { "cornerRadius": 16, "foreground": "white", "background": "{{ @{item.on} ? '#FF3B30' : '#34C759' }}", "font": { "kind": "footnote", "weight": "semibold" } } } } },
-                        "events": { "onTap": [{ "state": { "id": "c1", "input": { "targetId": "@{item.id}", "targetName": "@{item.name}", "targetOn": "{{ @{item.on} ? false : true }}", "targetTime": "{{ cast(#{now}, 'double') }}" }, "output": { "success": [{ "state": { "id": "a1", "input": { "devices": "{{ map(${devices}, { 'id': @{item.id}, 'name': @{item.name}, 'room': @{item.room}, 'kind': @{item.kind}, 'icon': @{item.icon}, 'on': @{item.id} == ${targetId} ? ${targetOn} : @{item.on} }) }}", "activeCount": "{{ sum(map(${devices}, @{item.id} == ${targetId} ? (${targetOn} ? 1 : 0) : (@{item.on} ? 1 : 0))) }}", "recentEvents": "{{ [ { 'id': cast(${targetTime}, 'string'), 'deviceName': ${targetName}, 'action': ${targetOn} ? 'on' : 'off', 'timestamp': ${targetTime} } ] + ${recentEvents} }}" } } }] } } }] } }
+                        "events": { "onTap": [{ "state": { "id": "c1", "input": { "targetId": "@{item.id}", "targetName": "@{item.name}", "targetOn": "{{ @{item.on} ? false : true }}", "targetTime": "{{ cast(#{now}, 'double') }}" } } }] } }
                     ] } },
 
                 { "id": "s2_title", "type": "hstack", "context": { "_spacing": 10, "_alignment": "center" }, "style": { "layout": { "maxWidth": "infinity", "padding": { "top": 8 } } },
@@ -155,7 +168,7 @@
                       { "id": "dr2_sp", "type": "spacer" },
                       { "id": "dr2_btn", "type": "button", "context": { "_label": "{{ @{item.on} ? 'Off' : 'On' }}" },
                         "style": { "button": { "custom": { "layout": { "minHeight": 32, "minWidth": 56, "padding": { "horizontal": 12 } }, "common": { "cornerRadius": 16, "foreground": "white", "background": "{{ @{item.on} ? '#FF3B30' : '#34C759' }}", "font": { "kind": "footnote", "weight": "semibold" } } } } },
-                        "events": { "onTap": [{ "state": { "id": "c2", "input": { "targetId": "@{item.id}", "targetName": "@{item.name}", "targetOn": "{{ @{item.on} ? false : true }}", "targetTime": "{{ cast(#{now}, 'double') }}" }, "output": { "success": [{ "state": { "id": "a2", "input": { "devices": "{{ map(${devices}, { 'id': @{item.id}, 'name': @{item.name}, 'room': @{item.room}, 'kind': @{item.kind}, 'icon': @{item.icon}, 'on': @{item.id} == ${targetId} ? ${targetOn} : @{item.on} }) }}", "activeCount": "{{ sum(map(${devices}, @{item.id} == ${targetId} ? (${targetOn} ? 1 : 0) : (@{item.on} ? 1 : 0))) }}", "recentEvents": "{{ [ { 'id': cast(${targetTime}, 'string'), 'deviceName': ${targetName}, 'action': ${targetOn} ? 'on' : 'off', 'timestamp': ${targetTime} } ] + ${recentEvents} }}" } } }] } } }] } }
+                        "events": { "onTap": [{ "state": { "id": "c2", "input": { "targetId": "@{item.id}", "targetName": "@{item.name}", "targetOn": "{{ @{item.on} ? false : true }}", "targetTime": "{{ cast(#{now}, 'double') }}" } } }] } }
                     ] } },
 
                 { "id": "s3_title", "type": "hstack", "context": { "_spacing": 10, "_alignment": "center" }, "style": { "layout": { "maxWidth": "infinity", "padding": { "top": 8 } } },
@@ -179,7 +192,7 @@
                       { "id": "dr3_sp", "type": "spacer" },
                       { "id": "dr3_btn", "type": "button", "context": { "_label": "{{ @{item.on} ? 'Off' : 'On' }}" },
                         "style": { "button": { "custom": { "layout": { "minHeight": 32, "minWidth": 56, "padding": { "horizontal": 12 } }, "common": { "cornerRadius": 16, "foreground": "white", "background": "{{ @{item.on} ? '#FF3B30' : '#34C759' }}", "font": { "kind": "footnote", "weight": "semibold" } } } } },
-                        "events": { "onTap": [{ "state": { "id": "c3", "input": { "targetId": "@{item.id}", "targetName": "@{item.name}", "targetOn": "{{ @{item.on} ? false : true }}", "targetTime": "{{ cast(#{now}, 'double') }}" }, "output": { "success": [{ "state": { "id": "a3", "input": { "devices": "{{ map(${devices}, { 'id': @{item.id}, 'name': @{item.name}, 'room': @{item.room}, 'kind': @{item.kind}, 'icon': @{item.icon}, 'on': @{item.id} == ${targetId} ? ${targetOn} : @{item.on} }) }}", "activeCount": "{{ sum(map(${devices}, @{item.id} == ${targetId} ? (${targetOn} ? 1 : 0) : (@{item.on} ? 1 : 0))) }}", "recentEvents": "{{ [ { 'id': cast(${targetTime}, 'string'), 'deviceName': ${targetName}, 'action': ${targetOn} ? 'on' : 'off', 'timestamp': ${targetTime} } ] + ${recentEvents} }}" } } }] } } }] } }
+                        "events": { "onTap": [{ "state": { "id": "c3", "input": { "targetId": "@{item.id}", "targetName": "@{item.name}", "targetOn": "{{ @{item.on} ? false : true }}", "targetTime": "{{ cast(#{now}, 'double') }}" } } }] } }
                     ] } },
 
                 { "id": "s4_title", "type": "hstack", "context": { "_spacing": 10, "_alignment": "center" }, "style": { "layout": { "maxWidth": "infinity", "padding": { "top": 8 } } },
@@ -203,7 +216,7 @@
                       { "id": "dr4_sp", "type": "spacer" },
                       { "id": "dr4_btn", "type": "button", "context": { "_label": "{{ @{item.on} ? 'Off' : 'On' }}" },
                         "style": { "button": { "custom": { "layout": { "minHeight": 32, "minWidth": 56, "padding": { "horizontal": 12 } }, "common": { "cornerRadius": 16, "foreground": "white", "background": "{{ @{item.on} ? '#FF3B30' : '#34C759' }}", "font": { "kind": "footnote", "weight": "semibold" } } } } },
-                        "events": { "onTap": [{ "state": { "id": "c4", "input": { "targetId": "@{item.id}", "targetName": "@{item.name}", "targetOn": "{{ @{item.on} ? false : true }}", "targetTime": "{{ cast(#{now}, 'double') }}" }, "output": { "success": [{ "state": { "id": "a4", "input": { "devices": "{{ map(${devices}, { 'id': @{item.id}, 'name': @{item.name}, 'room': @{item.room}, 'kind': @{item.kind}, 'icon': @{item.icon}, 'on': @{item.id} == ${targetId} ? ${targetOn} : @{item.on} }) }}", "activeCount": "{{ sum(map(${devices}, @{item.id} == ${targetId} ? (${targetOn} ? 1 : 0) : (@{item.on} ? 1 : 0))) }}", "recentEvents": "{{ [ { 'id': cast(${targetTime}, 'string'), 'deviceName': ${targetName}, 'action': ${targetOn} ? 'on' : 'off', 'timestamp': ${targetTime} } ] + ${recentEvents} }}" } } }] } } }] } }
+                        "events": { "onTap": [{ "state": { "id": "c4", "input": { "targetId": "@{item.id}", "targetName": "@{item.name}", "targetOn": "{{ @{item.on} ? false : true }}", "targetTime": "{{ cast(#{now}, 'double') }}" } } }] } }
                     ] } }
 
               ]
