@@ -250,7 +250,7 @@
                                  "textField": { "standard": "roundedBorder", "autocapitalization": "never", "autocorrectionDisabled": true } } },
                     { "id": "eye_btn", "type": "button",
                       "children": [ { "id": "eye_img", "type": "image", "context": { "_source": "${secureIcon}" }, "style": { "layout": { "width": 20, "height": 20 }, "common": { "foreground": { "light": "#8E8E8E", "dark": "#A8A8A8" } } } } ],
-                      "events": { "onTap": [{ "state": { "id": "toggle_eye", "input": { "apiKeySecured": "{{ !${apiKeySecured} }}" }, "output": { "success": [{ "state": { "id": "update_icon", "input": { "secureIcon": "{{ ${apiKeySecured} ? 'sf://eye.slash' : 'sf://eye' }}" } } }] } } }] } }
+                      "events": { "onTap": [{ "state": { "id": "toggle_eye", "input": { "apiKeySecured": "{{ !${apiKeySecured} }}", "secureIcon": "{{ !${apiKeySecured} ? 'sf://eye.slash' : 'sf://eye' }}" } } }] } }
                   ]
                 },
                 { "id": "save_btn", "type": "button",
@@ -437,25 +437,21 @@
                     "output": {
                       "success": [{
                         "state": {
-                          "id": "prepare_msg",
-                          "input": { "tmpMessage": { "text": "${message}", "created_at": "#{now}", "user": "#{user}", "userName": "${userName}", "userAvatar": "${userAvatar}" } },
+                          "id": "append_msg",
+                          "input": {
+                            "tmpMessage": { "text": "${message}", "created_at": "#{now}", "user": "#{user}", "userName": "${userName}", "userAvatar": "${userAvatar}" },
+                            "messages": "{{ ${messages} + [{ 'text': ${message}, 'created_at': #{now}, 'user': #{user}, 'userName': ${userName}, 'userAvatar': ${userAvatar} }] }}",
+                            "message": ""
+                          },
                           "output": {
                             "success": [
                               {
-                                "state": {
-                                  "id": "append_msg",
-                                  "input": { "messages": "{{ ${messages} + [${tmpMessage}] }}", "message": "" },
+                                "repo": {
+                                  "id": "send_repo",
+                                  "input": { "repositoryId": "msg_firebase", "operation": "create", "params": { "collection": "messages", "body": "${tmpMessage}" } },
                                   "output": {
-                                    "success": [{
-                                      "repo": {
-                                        "id": "send_repo",
-                                        "input": { "repositoryId": "msg_firebase", "operation": "create", "params": { "collection": "messages", "body": "${tmpMessage}" } },
-                                        "output": {
-                                          "success": [{ "state": { "id": "send_ok", "input": { "error": "", "isError": false } } }],
-                                          "failure": [{ "state": { "id": "send_err", "input": { "error": "@{send_repo.message}", "isError": true } } }]
-                                        }
-                                      }
-                                    }]
+                                    "success": [{ "state": { "id": "send_ok", "input": { "error": "", "isError": false } } }],
+                                    "failure": [{ "state": { "id": "send_err", "input": { "error": "@{send_repo.message}", "isError": true } } }]
                                   }
                                 }
                               },
