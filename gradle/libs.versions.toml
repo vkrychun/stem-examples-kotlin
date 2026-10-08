@@ -16,7 +16,7 @@ desugar-jdk-libs = "2.1.4"
 # Pin the runtime AAR version. Bumps here are the only change a release
 # review needs to verify — the dependency graph (transitive Compose / Coil /
 # Media3) is delivered by the published POM and Module Metadata.
-stem-runtime = "1.0.0"
+stem-runtime = "1.2.0"
 
 # LeakCanary — auto-detects retained Activity / Fragment / ViewModel
 # instances ~5 s after destruction in debug builds, dumps the GC-root
