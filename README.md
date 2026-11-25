@@ -8,9 +8,17 @@
 
 ## The idea
 
-Every module in this repo was produced through AI-assisted authoring — human-designed prompts, human selection among candidate outputs, and human editorial curation of the final JSON. [StemJSON](https://github.com/vkrychun/StemJSON/blob/main/spec/v1.0.md) is a declarative JSON DSL designed to be *written by an LLM* and rendered as native Jetpack Compose by [StemRuntimeSDK](https://github.com/vkrychun/stem-runtime-kotlin). No web views, no React Native, no JavaScript bridge.
+Every module in this repo was produced through AI-assisted authoring — human-designed prompts, human selection among candidate outputs, and human editorial curation of the final JSON. [StemJSON](https://github.com/vkrychun/StemJSON/blob/main/spec/v1.2.md) is a declarative JSON DSL designed to be *written by an LLM* and rendered as native Jetpack Compose by [StemRuntimeSDK](https://github.com/vkrychun/stem-runtime-kotlin). No web views, no React Native, no JavaScript bridge.
 
-Point an AI at the [LLM spec](https://github.com/vkrychun/StemJSON/blob/main/spec/v1.0-ai.md) (or the [full spec](https://github.com/vkrychun/StemJSON/blob/main/spec/v1.0.md) for human context). Ask for the UI/UX you want. Drop the output into this workspace. Run it.
+## Make your own module
+
+You don't have to write StemJSON by hand. Pick a route:
+
+- **From your AI chat.** A hosted MCP server lets Claude Code, Claude, ChatGPT or Cursor author and validate a module from chat. Run `claude mcp add --transport http stemjson https://mcp.stemjson.com/mcp`; other clients are covered at [stemjson.com/mcp](https://stemjson.com/mcp/).
+- **On iPhone or iPad.** [StemStudio AI](https://stemjson.com/stemstudio/) ([App Store](https://apps.apple.com/app/id6758396701)) writes a module from a plain-language description, previews it, and exports a `.stem` file that also runs on Android.
+- **Ready-made modules.** Browse the [StemJSON catalog](https://stemjson.com/catalog).
+
+To run the result here, copy the module JSON into `StemJSON/src/main/assets/json/`, then add an entry for it to the `Module` enum in `StemJSON/src/main/kotlin/com/stemjson/examples/json/JSONCatalog.kt`.
 
 ## Demos at a glance
 
@@ -42,8 +50,8 @@ Or open the project in Android Studio and run any of the three `Stem*` modules. 
 
 ## Learn more
 
-- [**StemJSON spec**](https://github.com/vkrychun/StemJSON/blob/main/spec/v1.0.md) — human-readable language specification.
-- [**StemJSON — LLM reference**](https://github.com/vkrychun/StemJSON/blob/main/spec/v1.0-ai.md) — condensed reference optimised for LLM prompts.
+- [**StemJSON spec**](https://github.com/vkrychun/StemJSON/blob/main/spec/v1.2.md) — human-readable language specification.
+- [**StemJSON — LLM reference**](https://github.com/vkrychun/StemJSON/blob/main/spec/v1.2-ai.md) — condensed reference optimised for LLM prompts.
 - [**StemRuntimeSDK**](https://github.com/vkrychun/stem-runtime-kotlin) — the Kotlin / Compose runtime that renders it.
 
 ## License
